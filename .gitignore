@@ -17,3 +17,4 @@ dist/
 build/
 
 /MC1
+!/MC1/README.md
