@@ -1,0 +1,38 @@
+/* Inter */
+@import 'https://rsms.me/inter/inter.css';
+
+/* Berkeley Mono */
+@font-face {
+  font-family: 'Berkeley Mono';
+  font-style: normal;
+  font-weight: 400;
+  src: url('https://fonts.luk.ke/BerkeleyMono-Regular.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  font-style: normal;
+  font-weight: 700;
+  src: url('https://fonts.luk.ke/BerkeleyMono-Bold.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  font-style: italic;
+  font-weight: 400;
+  src: url('https://fonts.luk.ke/BerkeleyMono-Italic.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Berkeley Mono';
+  font-style: italic;
+  font-weight: 700;
+  src: url('https://fonts.luk.ke/BerkeleyMono-BoldItalic.woff2') format('woff2');
+}
+
+
+/* Variables */
+
+$body: 'Inter var', sans-serif;
+$heading: 'Plex Sans Var', sans-serif;
+$mono: 'Berkeley Mono', ui-monospace, '.AppleSystemUIFontMonospaced', 'SF Mono', monospace;

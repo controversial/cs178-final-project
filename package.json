@@ -1,0 +1,26 @@
+{
+  "name": "cs178-final-project",
+  "description": "Final project for CS178 Visual Analytics.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/controversial/cs178-final-project"
+  },
+  "type": "module",
+  "scripts": {
+    "prepare": "node -e \"const fs = require('fs'); fs.writeFileSync('package-lock.json', JSON.stringify(JSON.parse(fs.readFileSync('package-lock.json', 'utf8'))));\"",
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@types/react-dom": "^18.0.11",
+    "@vitejs/plugin-react": "^3.1.0",
+    "sass": "^1.60.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.2.1"
+  }
+}

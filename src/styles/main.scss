@@ -1,0 +1,33 @@
+@use 'sass:color';
+@use './reset';
+@use './fonts';
+
+
+
+// Colors
+
+$black: #020012;
+$white: #fff;
+$almost-white: color.scale($white, $alpha: -5%);
+$text: $almost-white;
+$text-secondary: color.scale($white, $alpha: -30%);
+$text-hint: color.scale($white, $alpha: -60%);
+
+body {
+  background-color: $black;
+  color: $text;
+}
+
+
+// Typography
+
+:root {
+  font-size: 18px;
+  font-family: fonts.$body;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  vertical-align: baseline;
+  text-decoration-thickness: from-font;
+  text-underline-position: from-font;
+}

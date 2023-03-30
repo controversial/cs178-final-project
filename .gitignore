@@ -1,10 +1,19 @@
 .DS_Store
+
+# Data
 *.pdf
 *.twbx
 *.xlsx
 *.xls
-node_modules
+/MC1
+!/MC1/README.md
 
+# Node
+/node_modules
+/dist
+npm-debug.log*
+
+# Python
 env/
 venv/
 *.pyc
@@ -15,6 +24,3 @@ venv/
 *.egg-info
 dist/
 build/
-
-/MC1
-!/MC1/README.md
