@@ -30,11 +30,10 @@ export default function useElementSize<T extends HTMLElement>() {
         const ro = new ResizeObserver(() => { updateFrom(element); });
         ro.observe(element);
         cleanupRef.current = () => ro.unobserve(element);
-      }
       // Element was removed from DOM
-      else { setWidth(null); setHeight(null); }
+      } else { setWidth(null); setHeight(null); }
     },
-    { current: null }
+    { current: null },
   ), [updateFrom]); // updateFrom never changes, so measuredRef is stable
 
   return useMemo(() => [measuredRef, [width, height]], [measuredRef, width, height]);
