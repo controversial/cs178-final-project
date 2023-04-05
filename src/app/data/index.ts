@@ -19,11 +19,14 @@ export const ready = new Promise<void>((resolve, reject) => {
   worker.addEventListener('message', (e) => {
     const message = workerMessageSchema.parse(e.data);
     if (message.type === 'update') {
-      rows.push(...message.data);
-      console.log(`[${((performance.now() - startTime) / 1000).toFixed(4)}s]  ${rows.length.toLocaleString()} rows  (${message.data.length.toLocaleString()} new)`);
+      console.log(`[${((performance.now() - startTime) / 1000).toFixed(4)}s]  ${(rows.length + message.data.length).toLocaleString()} rows  (${message.data.length.toLocaleString()} new)`);
+      // manageable chunks to prevent call stack overflow
+      for (let i = 0; i < message.data.length; i += 1000) {
+        rows.push(...message.data.slice(i, i + 1000));
+      }
     } else if (message.type === 'finished') {
-      resolve();
       console.log(`[${((performance.now() - startTime) / 1000).toFixed(4)}s]  Finished loading ${rows.length.toLocaleString()} rows`);
+      resolve();
     } else {
       // make sure we’ve already handled all cases
       assertNever(message);
