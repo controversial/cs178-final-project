@@ -52,8 +52,10 @@ for await (const chunkBytes of req.body) {
     if (headerRow !== 'Timestamp,car-id,car-type,gate-name') throw new Error('Found unexpected header row');
     isHeaderRow = false;
   }
-  // Process all complete lines
-  parsedRows.push(...linesToParse.map((rawLine) => rowSchema.parse(rawLine.split(','))));
+  // Process all complete lines; manageable chunks to prevent call stack overflow
+  for (let i = 0; i < linesToParse.length; i += 1000) {
+    parsedRows.push(...linesToParse.slice(i, i + 1000).map((rawLine) => rowSchema.parse(rawLine.split(','))));
+  }
   sendUpdate();
 }
 // There could be a final line at the end if the file didn’t end with a newline
