@@ -9,12 +9,15 @@ export const worker = new Worker(
   { type: 'module' },
 );
 
-/** Holds all the rows of the CSV */
+/**
+ * Holds all the rows of the CSV.
+ * Fills up gradually as CSV loads.
+ */
 export const rows: Row[] = [];
 
 let startTime = 0;
 /** Resolves when the rows have all been downloaded and parsed */
-export const ready = new Promise<void>((resolve, reject) => {
+export const dataPromise = new Promise<Row[]>((resolve, reject) => {
   // Get ready to receive messages from the worker
   worker.addEventListener('message', (e) => {
     const message = workerMessageSchema.parse(e.data);
@@ -26,7 +29,7 @@ export const ready = new Promise<void>((resolve, reject) => {
       }
     } else if (message.type === 'finished') {
       console.log(`[${((performance.now() - startTime) / 1000).toFixed(4)}s]  Finished loading ${rows.length.toLocaleString()} rows`);
-      resolve();
+      resolve(rows);
     } else {
       // make sure we’ve already handled all cases
       assertNever(message);
