@@ -63,6 +63,8 @@ if (textBuffer.trim().length) {
 }
 
 // Send final event to the main thread
-globalThis.postMessage({
-  type: 'finished',
-} satisfies WorkerMessage);
+setTimeout(() => {
+  globalThis.postMessage({
+    type: 'finished',
+  } satisfies WorkerMessage);
+}, 1);
