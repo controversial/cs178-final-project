@@ -7,7 +7,9 @@ export default defineConfig({
     target: 'esnext',
     outDir: '../dist',
     emptyOutDir: true,
+    rollupOptions: { output: { format: 'es' } },
   },
+  worker: { format: 'es' },
   plugins: [
     react(),
   ],
