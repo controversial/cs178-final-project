@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable quotes, quote-props, no-multi-spaces, max-len */
 const rules = {
   "import/no-extraneous-dependencies": ["error", { "devDependencies": true }],   // Allow importing devDependencies
   "no-param-reassign": ["error", { "props": false }],                            // Allow modifying properties of parameters
@@ -18,7 +18,7 @@ const rules = {
   "jsx-a11y/label-has-associated-control": ["error", { "assert": "either" }],    // Allow associating form labels by nesting
   "react/jsx-one-expression-per-line": "off",                                    // Allow multiple JSX expressions on a line
   "no-continue": "off",                                                          // Allow continue statements
-  "no-restricted-exports": ["error", { "restrictedNamedExports": ["then"] } ],   // Allow `export { default }` syntax
+  "no-restricted-exports": ["error", { "restrictedNamedExports": ["then"] }],   // Allow `export { default }` syntax
   "import/prefer-default-export": "off",                                         // Allow modules to have a single named export
   "lines-between-class-members": "off",                                          // Allow omitting an empty line between class members
   "max-classes-per-file": "off",                                                 // Allow more than one class per file
@@ -36,7 +36,7 @@ const rules = {
   "no-unused-vars": "off",
   "@typescript-eslint/no-unused-vars": [
     "error",
-    { "vars": "all", "args": "after-used", "ignoreRestSiblings": true }
+    { "vars": "all", "args": "after-used", "ignoreRestSiblings": true },
   ],
 
   "func-call-spacing": "off",
@@ -45,6 +45,21 @@ const rules = {
 
   "no-use-before-define": "off",
   "@typescript-eslint/no-use-before-define": ["error", { "ignoreTypeReferences": false }],
+  "no-restricted-syntax": [
+    "error",
+    {
+      selector: "ForInStatement",
+      message: "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array.",
+    },
+    {
+      selector: "LabeledStatement",
+      message: "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand.",
+    },
+    {
+      selector: "WithStatement",
+      message: "`with` is disallowed in strict mode because it makes code impossible to predict and optimize.",
+    },
+  ],
 };
 
 module.exports = {
@@ -58,7 +73,7 @@ module.exports = {
   "rules": rules,
 
   "globals": {
-    "globalThis": false // Allow referencing globalThis
+    "globalThis": false, // Allow referencing globalThis
   },
 
   // Typescript declarations can contain unused files
@@ -66,8 +81,8 @@ module.exports = {
     {
       "files": ["*.d.ts"],
       "rules": {
-        "no-unused-vars": "off"
-      }
-    }
-  ]
-}
+        "no-unused-vars": "off",
+      },
+    },
+  ],
+};
