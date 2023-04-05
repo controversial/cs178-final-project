@@ -21,7 +21,7 @@ export const dataPromise = new Promise<Row[]>((resolve, reject) => {
   // Get ready to receive messages from the worker
   worker.addEventListener('message', (e) => {
     const message = workerMessageSchema.parse(e.data);
-    if (message.type === 'update') {
+    if (message.type === 'rows') {
       console.log(`[${((performance.now() - startTime) / 1000).toFixed(4)}s]  ${(rows.length + message.data.length).toLocaleString()} rows  (${message.data.length.toLocaleString()} new)`);
       // manageable chunks to prevent call stack overflow
       for (let i = 0; i < message.data.length; i += 1000) {

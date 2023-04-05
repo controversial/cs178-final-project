@@ -13,7 +13,7 @@ let channelOpened = false; // Whether the main thread has indicated it’s ready
 function sendUpdate() {
   if (!channelOpened || parsedRows.length === 0) return;
   globalThis.postMessage({
-    type: 'update',
+    type: 'rows',
     data: parsedRows,
   } satisfies WorkerMessage);
   parsedRows = [];

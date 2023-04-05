@@ -25,7 +25,7 @@ export type RowWithTrip = Row & { tripId: number };
 export const workerMessageSchema = z.discriminatedUnion('type', [
   // note: we don’t actually check the Row schema here, since we assume it’s been been checked by
   // the worker and we want to avoid the expensive operation on the main thread
-  z.object({ type: z.literal('update'), data: z.custom<Row[]>() }),
+  z.object({ type: z.literal('rows'), data: z.custom<Row[]>() }),
 
   z.object({ type: z.literal('finished') }),
 ]);
