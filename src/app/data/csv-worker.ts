@@ -1,6 +1,8 @@
 import { rowSchema, messageToWorkerSchema } from './schema';
 import type { MessageFromWorker } from './schema';
 
+function assertNever(x: never): never { throw new Error(`Unexpected object: ${x}`); }
+
 let isHeaderRow = true;
 let lastParsedTimestamp = -Infinity;
 let textBuffer = '';
@@ -43,9 +45,20 @@ function process(chunkBytes: Uint8Array) {
 // Receive unprocessed data from the main thread
 globalThis.addEventListener('message', async (event: MessageEvent<unknown>) => {
   const message = messageToWorkerSchema.parse(event.data);
+  // Process data
   if (message.type === 'chunk') {
     process(message.data);
-  } else {
-    throw new Error(`Worker got unexpected message: ${event.data}`);
-  }
+  // Confirm when we finish
+  } else if (message.type === 'finish') {
+    if (textBuffer.length) {
+      if (textBuffer.endsWith('\n')) throw new Error('Invariant violation: textBuffer should not be left ending with a newline');
+      else {
+        console.warn('CSV did not end with a newline; parsing last row separately');
+        textBuffer += '\n';
+        process(new Uint8Array([]));
+      }
+      if (textBuffer.length) throw new Error('Invariant violation: textBuffer should be empty after parsing finishes row');
+    }
+  // Make TypeScript enforce that we handled all cases
+  } else assertNever(message);
 });

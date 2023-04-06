@@ -58,9 +58,7 @@ export const dataPromise: Promise<Row[]> = fetch('/sensor-data.csv')
         worker.postMessage({ type: 'chunk', data: chunk } satisfies MessageToWorker, [chunk.buffer]);
         chunksSent += 1;
       }
-      worker.postMessage({ type: 'chunk', data: new TextEncoder().encode('\n') } satisfies MessageToWorker);
-      chunksSent += 1;
-
       finishedSending = true;
+      worker.postMessage({ type: 'finish' } satisfies MessageToWorker);
     })().catch((e) => reject(e));
   }));

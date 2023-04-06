@@ -32,7 +32,7 @@ export type MessageFromWorker = z.infer<typeof messageFromWorkerSchema>;
 
 /** Checks messages sent from the main thread to the worker */
 export const messageToWorkerSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('start') }),
   z.object({ type: z.literal('chunk'), data: z.instanceof(Uint8Array) }),
+  z.object({ type: z.literal('finish') }),
 ]);
 export type MessageToWorker = z.infer<typeof messageToWorkerSchema>;
