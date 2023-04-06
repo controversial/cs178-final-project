@@ -19,6 +19,7 @@ export const rowSchema = z.tuple([
   gateName,
 }));
 export type Row = z.infer<typeof rowSchema>;
+export type RowWithTrip = Row & { tripId: number };
 
 /** Checks messages sent from the worker to the main thread */
 export const workerMessageSchema = z.discriminatedUnion('type', [
