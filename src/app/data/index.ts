@@ -30,6 +30,7 @@ export const dataPromise = new Promise<Row[]>((resolve, reject) => {
     } else if (message.type === 'finished') {
       console.log(`[${((performance.now() - startTime) / 1000).toFixed(4)}s]  Finished loading ${rows.length.toLocaleString()} rows`);
       resolve(rows);
+      console.log('rows sample', rows.slice(0, 10));
     } else {
       // make sure we’ve already handled all cases
       assertNever(message);

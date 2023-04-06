@@ -17,6 +17,7 @@ export const rowSchema = z.tuple([
   carId,
   carType,
   gateName,
+  gateType: gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1] ?? null,
 }));
 export type Row = z.infer<typeof rowSchema>;
 export type RowWithTrip = Row & { tripId: number };
