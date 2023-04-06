@@ -18,7 +18,7 @@ export const worker = new Worker(
 export const rows: Row[] = [];
 
 
-export const dataPromise = fetch('/sensor-data.csv')
+export const dataPromise: Promise<Row[]> = fetch('/sensor-data.csv')
   .then((response) => new Promise((resolve, reject) => {
     // Keep track of how many chunks we’ve sent to the worker, and whether we’ve sent the whole file
     let finishedSending = false;
