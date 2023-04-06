@@ -23,11 +23,16 @@ export type Row = z.infer<typeof rowSchema>;
 export type RowWithTrip = Row & { tripId: number };
 
 /** Checks messages sent from the worker to the main thread */
-export const workerMessageSchema = z.discriminatedUnion('type', [
+export const messageFromWorkerSchema = z.discriminatedUnion('type', [
   // note: we don’t actually check the Row schema here, since we assume it’s been been checked by
   // the worker and we want to avoid the expensive operation on the main thread
   z.object({ type: z.literal('rows'), data: z.custom<Row[]>() }),
-
-  z.object({ type: z.literal('finished') }),
 ]);
-export type WorkerMessage = z.infer<typeof workerMessageSchema>;
+export type MessageFromWorker = z.infer<typeof messageFromWorkerSchema>;
+
+/** Checks messages sent from the main thread to the worker */
+export const messageToWorkerSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('start') }),
+  z.object({ type: z.literal('chunk'), data: z.instanceof(Uint8Array) }),
+]);
+export type MessageToWorker = z.infer<typeof messageToWorkerSchema>;

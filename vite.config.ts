@@ -8,6 +8,7 @@ export default defineConfig({
     outDir: '../dist',
     emptyOutDir: true,
     rollupOptions: { output: { format: 'es' } },
+    modulePreload: { polyfill: false },
   },
   worker: { format: 'es' },
   plugins: [
