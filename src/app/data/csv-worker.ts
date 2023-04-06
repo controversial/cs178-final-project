@@ -2,6 +2,7 @@ import { rowSchema, messageToWorkerSchema } from './schema';
 import type { MessageFromWorker } from './schema';
 
 let isHeaderRow = true;
+let lastParsedTimestamp = -Infinity;
 let textBuffer = '';
 
 const textDecoder = new TextDecoder('utf-8');
@@ -25,7 +26,13 @@ function process(chunkBytes: Uint8Array) {
     isHeaderRow = false;
   }
   // Process the remaining rows
-  const parsedRows = linesToParse.map((rawLine) => rowSchema.parse(rawLine.split(',')));
+  const parsedRows = linesToParse.map((rawLine) => {
+    const parsed = rowSchema.parse(rawLine.split(','));
+    if (parsed.timestamp.getTime() < lastParsedTimestamp) throw new Error('Invariant violation: Encountered row out of order');
+    lastParsedTimestamp = parsed.timestamp.getTime();
+    return parsed;
+  });
+
   // Send what we’ve processed back to the parent
   globalThis.postMessage({
     type: 'rows',
