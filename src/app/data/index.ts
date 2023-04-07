@@ -7,7 +7,7 @@ function assertNever(x: never): never { throw new Error(`Unexpected object: ${x}
 
 /** Does CPU-heavy data processing on a separate thread */
 export const worker = new Worker(
-  new URL('./csv-worker.ts', import.meta.url),
+  new URL('./worker.ts', import.meta.url),
   { type: 'module' },
 );
 
@@ -46,8 +46,8 @@ export const dataPromise: Promise<Row[]> = fetch('/sensor-data.csv')
     });
 
     // Get ready to handle any error that occurs in the worker
-    worker.addEventListener('error', (e) => {
-      reject(e.error);
+    worker.addEventListener('error', () => {
+      reject(new Error('Worker broke 🤕'));
     });
 
     // Read the CSV in chunks and send them to the worker
@@ -55,10 +55,11 @@ export const dataPromise: Promise<Row[]> = fetch('/sensor-data.csv')
       if (!response.ok || response.body === null) throw new Error(`Failed to fetch CSV: ${response.status} ${response.statusText}`);
       for await (const chunk of response.body) {
         console.log(`[${(performance.now() / 1000).toFixed(4)}s]  sending chunk ${chunksSent + 1} to worker (${chunk.byteLength.toLocaleString()} bytes)`);
-        worker.postMessage({ type: 'chunk', data: chunk } satisfies MessageToWorker, [chunk.buffer]);
         chunksSent += 1;
+        worker.postMessage({ type: 'chunk', data: chunk } satisfies MessageToWorker, [chunk.buffer]);
       }
       finishedSending = true;
+      chunksSent += 1;
       worker.postMessage({ type: 'finish' } satisfies MessageToWorker);
     })().catch((e) => reject(e));
   }));

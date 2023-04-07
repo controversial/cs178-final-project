@@ -38,6 +38,10 @@ const rules = {
     "error",
     { "vars": "all", "args": "after-used", "ignoreRestSiblings": true },
   ],
+  "no-useless-constructor": "off",
+  "@typescript-eslint/no-useless-constructor": "error",
+  "no-empty-function": "off",
+  "@typescript-eslint/no-empty-function": "error",
 
   "func-call-spacing": "off",
   "@typescript-eslint/func-call-spacing": ["error", "never"],

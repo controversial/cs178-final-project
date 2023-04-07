@@ -35,7 +35,9 @@ export default function App() {
   const [rows, setRows] = useState<Row[] | undefined>(undefined);
   const rowsWithTrips = useMemo(() => calculateTrips(rows?.slice()), [rows]);
 
-  dataPromise.then((data) => { setRows(data); });
+  dataPromise
+    .then((data) => { setRows(data); })
+    .catch((e) => console.error(e));
 
   return (
     <div className={cx('base')}>
