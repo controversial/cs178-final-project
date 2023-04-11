@@ -4,6 +4,7 @@ import { dataPromise } from './data';
 
 import styles from './index.module.scss';
 import classNames from 'classnames/bind';
+import TripTimeView from './components/TripTimeView/TripTimeView';
 const cx = classNames.bind(styles);
 
 function calculateTrips(rows: Row[] | undefined) {
@@ -15,7 +16,7 @@ function calculateTrips(rows: Row[] | undefined) {
   let tripId = -1;
   let inPark = false;
   let prevCarId = '';
-  rows.map((row, i) => {
+  const rowsWithTrips = rows.map((row) => {
     if (row.carId !== prevCarId) {
       inPark = row.gateName.startsWith('entrance');
       prevCarId = row.carId;
@@ -25,22 +26,31 @@ function calculateTrips(rows: Row[] | undefined) {
       if (inPark) tripId += 1;
     }
 
-    return { ...row, tripId };
+    return { ...row, tripId, time: row.timestamp.getTime() };
   });
-
-  return rows;
+  return rowsWithTrips;
 }
 
 export default function App() {
   const [rows, setRows] = useState<Row[] | undefined>(undefined);
   const rowsWithTrips = useMemo(() => calculateTrips(rows?.slice()), [rows]);
 
+  const [selectedTrip, setSelectedTrip] = useState<number | undefined>(1);
+  const selectedTripRows = useMemo(() => (rowsWithTrips ? rowsWithTrips.filter((row) => row.tripId === selectedTrip) : []), [rowsWithTrips, selectedTrip]);
+
   dataPromise.then((data) => { setRows(data); });
 
   return (
     <div className={cx('base')}>
       <h1>CS178 Final Project</h1>
-      <p>{!rows ? 'Loading...' : `Got ${rows.length.toLocaleString()} rows`}</p>
+      {!rows ? 'Loading...' : (
+        <>
+          <p>
+            {`Got ${rows.length.toLocaleString()} rows`}
+          </p>
+          <TripTimeView trip={selectedTripRows} />
+        </>
+      )}
     </div>
   );
 }
