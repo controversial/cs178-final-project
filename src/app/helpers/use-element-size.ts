@@ -36,5 +36,5 @@ export default function useElementSize<T extends HTMLElement>() {
     { current: null },
   ), [updateFrom]); // updateFrom never changes, so measuredRef is stable
 
-  return useMemo(() => [measuredRef, [width, height]], [measuredRef, width, height]);
+  return useMemo(() => [measuredRef, [width, height] as const], [measuredRef, width, height]);
 }
