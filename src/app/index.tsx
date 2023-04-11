@@ -38,7 +38,9 @@ export default function App() {
   const [selectedTrip, setSelectedTrip] = useState<number | undefined>(1);
   const selectedTripRows = useMemo(() => (rowsWithTrips ? rowsWithTrips.filter((row) => row.tripId === selectedTrip) : []), [rowsWithTrips, selectedTrip]);
 
-  dataPromise.then((data) => { setRows(data); });
+  dataPromise
+    .then((data) => { setRows(data); })
+    .catch((e) => console.error(e));
 
   return (
     <div className={cx('base')}>

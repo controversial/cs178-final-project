@@ -17,16 +17,22 @@ export const rowSchema = z.tuple([
   carId,
   carType,
   gateName,
+  gateType: gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1] ?? null,
 }));
 export type Row = z.infer<typeof rowSchema>;
 export type RowWithTrip = Row & { tripId: number };
 
 /** Checks messages sent from the worker to the main thread */
-export const workerMessageSchema = z.discriminatedUnion('type', [
+export const messageFromWorkerSchema = z.discriminatedUnion('type', [
   // note: we don’t actually check the Row schema here, since we assume it’s been been checked by
   // the worker and we want to avoid the expensive operation on the main thread
-  z.object({ type: z.literal('update'), data: z.custom<Row[]>() }),
-
-  z.object({ type: z.literal('finished') }),
+  z.object({ type: z.literal('rows'), data: z.custom<Row[]>() }),
 ]);
-export type WorkerMessage = z.infer<typeof workerMessageSchema>;
+export type MessageFromWorker = z.infer<typeof messageFromWorkerSchema>;
+
+/** Checks messages sent from the main thread to the worker */
+export const messageToWorkerSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('chunk'), data: z.instanceof(Uint8Array) }),
+  z.object({ type: z.literal('finish') }),
+]);
+export type MessageToWorker = z.infer<typeof messageToWorkerSchema>;
