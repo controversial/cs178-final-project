@@ -14,7 +14,7 @@ const csvParser = new CSVParser(
  * As we process rows, a car is “in the park” at the current row if it has a trip ID assigned.
  * When it leaves the park, it will be removed from the map.
 */
-const carTripIds = new Map<string, number>();
+const carTrips = new Map<string, {tripId: number, prevTime: Date}>();
 let nextTripId = 0;
 
 // Receive unprocessed data from the main thread
@@ -38,18 +38,21 @@ globalThis.addEventListener('message', async (event: MessageEvent<unknown>) => {
     ]).parse(row.gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1]);
 
     // A new “trip” starts every time a vehicle enters the park; a “tripId” uniquely identifies each
-    let tripId = carTripIds.get(row.carId);
+    let { tripId, prevTime } = carTrips.get(row.carId) ?? { tripId: null, prevTime: row.timestamp };
     if (tripId == null) {
       // we encountered a car that isn’t “in the park” at this point
       tripId = nextTripId;
-      carTripIds.set(row.carId, tripId);
+      carTrips.set(row.carId, { tripId, prevTime: row.timestamp });
       nextTripId += 1;
     // if a car that is already in the park goes through an entrance, it’s leaving
     } else if (gateType === 'entrance') {
-      carTripIds.delete(row.carId);
+      carTrips.delete(row.carId);
     }
 
-    return { ...row, gateType, tripId } satisfies Row;
+    // "timeSincePrev" is the amount of time which has passed since the previous sensor reading
+    const timeSincePrev = +row.timestamp - +prevTime;
+
+    return { ...row, gateType, tripId, timeSincePrev } satisfies Row;
   });
 
 

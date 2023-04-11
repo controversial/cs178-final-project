@@ -24,6 +24,7 @@ export type BaseRow = z.output<typeof rowSchema>;
 export type Row = BaseRow & {
   tripId: number;
   gateType: 'entrance' | 'gate' | 'general-gate' | 'ranger-stop' | 'ranger-base' | 'camping';
+  timeSincePrev: number;
 };
 
 
