@@ -1,5 +1,5 @@
-import { messageFromWorkerSchema } from './schema';
-import type { MessageToWorker, Row } from './schema';
+import { messageFromWorkerSchema } from './schemas';
+import type { MessageToWorker, Row } from './schemas';
 
 console.log(`[${(performance.now() / 1000).toFixed(4)}s]  script executing`);
 

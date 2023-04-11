@@ -1,5 +1,6 @@
 import z from 'zod';
 
+
 export const rowSchema = z.tuple([
   z.string().transform((s) => new Date(s)),
   z.string(),
@@ -17,10 +18,14 @@ export const rowSchema = z.tuple([
   carId,
   carType,
   gateName,
-  gateType: gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1] ?? null,
 }));
-export type Row = z.infer<typeof rowSchema>;
-export type RowWithTrip = Row & { tripId: number };
+export type BaseRow = z.output<typeof rowSchema>;
+// We add a few computed attributes after Zod’s initial parsing
+export type Row = BaseRow & {
+  tripId: number;
+  gateType: 'entrance' | 'gate' | 'general-gate' | 'ranger-stop' | 'ranger-base' | 'camping';
+};
+
 
 /** Checks messages sent from the worker to the main thread */
 export const messageFromWorkerSchema = z.discriminatedUnion('type', [
@@ -29,6 +34,7 @@ export const messageFromWorkerSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('rows'), data: z.custom<Row[]>() }),
 ]);
 export type MessageFromWorker = z.infer<typeof messageFromWorkerSchema>;
+
 
 /** Checks messages sent from the main thread to the worker */
 export const messageToWorkerSchema = z.discriminatedUnion('type', [
