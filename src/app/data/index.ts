@@ -40,15 +40,14 @@ export const dataPromise: Promise<{ conn: typeof db.conn, rows: Row[]}> = fetch(
             rows.push(...message.data.slice(i, i + 1000));
           }
 
-          dbPromises.push(db.insertRows(message.data).catch((err) => reject(err)));
+          if (message.arrowData) {
+            dbPromises.push(db.insertArrow(message.arrowData).catch((err) => reject(err)));
+          }
         }
         // Check success condition
         if (finishedSending && chunksSent === chunksReceived) {
           console.log(`[${(performance.now() / 1000).toFixed(4)}s]  Finished loading ${rows.length.toLocaleString()} rows`);
-          Promise.all(dbPromises).then(() => {
-            console.log(`[${(performance.now() / 1000).toFixed(4)}s]  Finished adding ${rows.length.toLocaleString()} rows to database`);
-            resolve({ conn: db.conn, rows });
-          });
+          Promise.all(dbPromises).then(() => resolve({ conn: db.conn, rows }));
         }
       // make Typescript enforce that we handled all cases
       } else assertNever(message.type);

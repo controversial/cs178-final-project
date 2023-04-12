@@ -31,7 +31,11 @@ export type Row = BaseRow & {
 export const messageFromWorkerSchema = z.discriminatedUnion('type', [
   // note: we don’t actually check the Row schema here, since we assume it’s been been checked by
   // the worker and we want to avoid the expensive operation on the main thread
-  z.object({ type: z.literal('rows'), data: z.custom<Row[]>() }),
+  z.object({
+    type: z.literal('rows'),
+    data: z.custom<Row[]>(),
+    arrowData: z.instanceof(Uint8Array).or(z.null()),
+  }),
 ]);
 export type MessageFromWorker = z.infer<typeof messageFromWorkerSchema>;
 
