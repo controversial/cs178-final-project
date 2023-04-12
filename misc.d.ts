@@ -6,3 +6,8 @@ declare module '*.module.scss' {
 interface ReadableStream<R = any> {
   [Symbol.asyncIterator](): AsyncIterator<R>;
 }
+
+declare module '*?url' {
+  const path: string;
+  export default path;
+}

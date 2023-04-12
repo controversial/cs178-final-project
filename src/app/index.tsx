@@ -10,7 +10,7 @@ export default function App() {
   const [rows, setRows] = useState<Row[] | undefined>(undefined);
 
   dataPromise
-    .then((data) => { setRows(data); })
+    .then((data) => { setRows(data.rows); })
     .catch((e) => console.error(e));
 
   return (

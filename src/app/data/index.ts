@@ -1,5 +1,7 @@
 import { messageFromWorkerSchema } from './schemas';
 import type { MessageToWorker, Row } from './schemas';
+import * as db from './database';
+
 
 console.log(`[${(performance.now() / 1000).toFixed(4)}s]  script executing`);
 
@@ -18,12 +20,14 @@ export const worker = new Worker(
 export const rows: Row[] = [];
 
 
-export const dataPromise: Promise<Row[]> = fetch('/sensor-data.csv')
+export const dataPromise: Promise<{ conn: typeof db.conn, rows: Row[]}> = fetch('/sensor-data.csv')
   .then((response) => new Promise((resolve, reject) => {
     // Keep track of how many chunks we’ve sent to the worker, and whether we’ve sent the whole file
     let finishedSending = false;
     let chunksSent = 0;
     let chunksReceived = 0;
+
+    const dbPromises: Promise<void>[] = [];
     // Get ready to receive rows back from the worker
     worker.addEventListener('message', (e: MessageEvent<unknown>) => {
       const message = messageFromWorkerSchema.parse(e.data);
@@ -35,11 +39,16 @@ export const dataPromise: Promise<Row[]> = fetch('/sensor-data.csv')
           for (let i = 0; i < message.data.length; i += 1000) {
             rows.push(...message.data.slice(i, i + 1000));
           }
+
+          dbPromises.push(db.insertRows(message.data).catch((err) => reject(err)));
         }
         // Check success condition
         if (finishedSending && chunksSent === chunksReceived) {
           console.log(`[${(performance.now() / 1000).toFixed(4)}s]  Finished loading ${rows.length.toLocaleString()} rows`);
-          resolve(rows);
+          Promise.all(dbPromises).then(() => {
+            console.log(`[${(performance.now() / 1000).toFixed(4)}s]  Finished adding ${rows.length.toLocaleString()} rows to database`);
+            resolve({ conn: db.conn, rows });
+          });
         }
       // make Typescript enforce that we handled all cases
       } else assertNever(message.type);
