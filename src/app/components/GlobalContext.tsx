@@ -1,10 +1,7 @@
 import React, { createContext, useContext } from 'react';
-import type { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm';
-import type { AdjacencyGraph } from '../data/schemas';
 
 const GlobalContext = createContext<{
-  conn: AsyncDuckDBConnection;
-  graph: AdjacencyGraph;
+  // TODO: fill out
 } | null>(null);
 
 export function GlobalContextProvider({

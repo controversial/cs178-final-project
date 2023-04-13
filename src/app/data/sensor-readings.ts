@@ -1,5 +1,5 @@
-import { messageFromWorkerSchema } from './schemas';
-import type { MessageToWorker, Row } from './schemas';
+import { messageFromWorkerSchema } from './utils/schemas';
+import type { MessageToWorker, Row } from './utils/schemas';
 import * as db from './database';
 
 
@@ -9,7 +9,7 @@ function assertNever(x: never): never { throw new Error(`Unexpected object: ${x}
 
 /** Does CPU-heavy data processing on a separate thread */
 export const worker = new Worker(
-  new URL('./worker.ts', import.meta.url),
+  new URL('./utils/worker.ts', import.meta.url),
   { type: 'module' },
 );
 
@@ -17,11 +17,11 @@ export const worker = new Worker(
  * Holds all the rows of the CSV.
  * Fills up gradually as CSV loads.
  */
-export const rows: Row[] = [];
+const rows: Row[] = [];
 
 
-export const dataPromise: Promise<{ conn: typeof db.conn, rows: Row[]}> = fetch('/sensor-data.csv')
-  .then((response) => new Promise((resolve, reject) => {
+await fetch('/sensor-data.csv')
+  .then((response) => new Promise<void>((resolve, reject) => {
     // Keep track of how many chunks we’ve sent to the worker, and whether we’ve sent the whole file
     let finishedSending = false;
     let chunksSent = 0;
@@ -47,7 +47,7 @@ export const dataPromise: Promise<{ conn: typeof db.conn, rows: Row[]}> = fetch(
         // Check success condition
         if (finishedSending && chunksSent === chunksReceived) {
           console.log(`[${(performance.now() / 1000).toFixed(4)}s]  Finished loading ${rows.length.toLocaleString()} rows`);
-          Promise.all(dbPromises).then(() => resolve({ conn: db.conn, rows }));
+          Promise.all(dbPromises).then(() => resolve());
         }
       // make Typescript enforce that we handled all cases
       } else assertNever(message.type);
@@ -71,3 +71,6 @@ export const dataPromise: Promise<{ conn: typeof db.conn, rows: Row[]}> = fetch(
       worker.postMessage({ type: 'finish' } satisfies MessageToWorker);
     })().catch((e) => reject(e));
   }));
+
+
+export default rows;
