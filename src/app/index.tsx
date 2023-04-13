@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { dataPromise } from './data';
+import adjacencyGraphPromise from './data/sensor-graph';
 
-import type { Row } from './data/schemas';
+import type { AdjacencyGraph, Row } from './data/schemas';
 import type { AsyncDuckDBConnection } from '@duckdb/duckdb-wasm';
 
 import { GlobalContextProvider } from './components/GlobalContext';
@@ -14,6 +15,7 @@ const cx = classNames.bind(styles);
 export default function App() {
   const [rows, setRows] = useState<Row[] | null>(null);
   const [conn, setConn] = useState<AsyncDuckDBConnection | null>(null);
+  const [graph, setGraph] = useState<AdjacencyGraph | null>(null);
 
   dataPromise
     .then((data) => {
@@ -26,9 +28,18 @@ export default function App() {
     })
     .catch((e) => console.error(e));
 
-  if (!rows || !conn) return <p>Loading...</p>;
+  adjacencyGraphPromise
+    .then((g) => {
+      setGraph(g);
+      // @ts-ignore
+      globalThis.graph = g;
+    })
+    .catch((e) => console.error(e));
+
+  if (!rows || !conn || !graph) return <p>Loading...</p>;
+
   return (
-    <GlobalContextProvider conn={conn}>
+    <GlobalContextProvider conn={conn} graph={graph}>
       <div className={cx('base')}>
         <h1>CS178 Final Project</h1>
         <p>Got {rows.length.toLocaleString()} rows</p>

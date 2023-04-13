@@ -2,8 +2,7 @@
 
 import CSVParser from './csv-parser';
 import { tableFromJSON, tableToIPC } from 'apache-arrow';
-import z from 'zod';
-import { rowSchema, messageToWorkerSchema } from './schemas';
+import { rowSchema, messageToWorkerSchema, gateTypeSchema } from './schemas';
 import type { MessageFromWorker, Row } from './schemas';
 
 function assertNever(x: never): never { throw new Error(`Unexpected object: ${x}`); }
@@ -36,9 +35,7 @@ globalThis.addEventListener('message', async (event: MessageEvent<unknown>) => {
 
   const transformedRows = newRows.map((row) => {
     // "gateType" is the category of gate that the vehicle is scanning at
-    const gateType = z.enum([
-      'entrance', 'gate', 'general-gate', 'ranger-stop', 'ranger-base', 'camping',
-    ]).parse(row.gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1]);
+    const gateType = gateTypeSchema.parse(row.gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1]);
 
     // A new “trip” starts every time a vehicle enters the park; a “tripId” uniquely identifies each
     let tripId = carTripIds.get(row.carId);
