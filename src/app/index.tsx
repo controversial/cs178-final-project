@@ -12,6 +12,7 @@ const Status = React.lazy(async () => {
     default: () => <p>Got {rows.length.toLocaleString()} rows</p>,
   };
 });
+const Heatmap = React.lazy(() => import('./components/Heatmap'));
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <h1>CS178 Final Project</h1>
         <Suspense fallback={<p>Loading...</p>}>
           <Status />
+          <Heatmap />
         </Suspense>
       </div>
     </GlobalContextProvider>
