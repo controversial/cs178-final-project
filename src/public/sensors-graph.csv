@@ -1,0 +1,41 @@
+id,y,x,adj
+general-gate0,9,110,camping1 general-gate2 camping8 gate3 entrance2 gate4 general-gate6 gate5 camping6 gate8 entrance4 general-gate5 general-gate3
+entrance0,13,62,general-gate1 gate6 entrance3 gate7 general-gate7 general-gate4 gate0
+ranger-stop0,16,89,general-gate2 ranger-stop2
+ranger-stop1,24,19,gate2
+general-gate1,25,64,ranger-stop2 gate6 entrance3 gate7 general-gate7 general-gate4 gate0 entrance0
+general-gate2,32,104,camping8 gate3 entrance2 gate4 general-gate6 gate5 camping6 gate8 entrance4 general-gate5 general-gate3 general-gate0 camping1 ranger-stop0
+gate0,33,63,gate6 entrance3 gate7 general-gate7 general-gate4 general-gate1 entrance0 gate1
+ranger-stop2,35,80,ranger-stop0 general-gate1
+camping0,41,52,gate1 camping3 general-gate7 entrance1 camping2 gate2 camping4
+gate1,44,58,camping0 camping3 general-gate7 entrance1 camping2 gate2 camping4 gate0
+ranger-stop3,45,148,gate3
+camping8,48,183,general-gate3 entrance2 gate4 general-gate6 gate5 camping6 gate8 entrance4 general-gate5 general-gate2 general-gate0 camping1 gate3
+camping1,50,129,general-gate0 general-gate2 camping8 gate3 entrance2 gate4 general-gate6 gate5 camping6 gate8 entrance4 general-gate5 general-gate3
+gate2,54,24,camping2 entrance1 gate1 camping0 camping3 camping4 general-gate7 ranger-stop1
+general-gate3,55,186,general-gate5 camping8 gate3 general-gate2 general-gate0 camping1 entrance2 gate4 general-gate6 gate5 camping6 gate8 entrance4
+gate3,60,149,camping8 entrance2 gate4 general-gate6 gate5 camping6 gate8 entrance4 general-gate5 general-gate3 general-gate2 general-gate0 camping1 ranger-stop3
+camping2,64,44,entrance1 gate1 camping0 camping3 camping4 general-gate7 gate2
+entrance1,67,17,gate1 camping0 camping3 camping4 general-gate7 camping2 gate2
+camping3,68,45,gate1 camping0 general-gate7 entrance1 camping2 gate2 camping4
+entrance2,87,183,gate4 general-gate6 gate5 camping6 gate8 entrance4 general-gate5 camping8 gate3 general-gate2 general-gate0 camping1 general-gate3
+camping4,89,48,gate1 camping0 camping3 general-gate7 entrance1 camping2 gate2
+ranger-stop4,95,18,general-gate7 camping5
+general-gate4,98,69,gate6 entrance3 gate0 general-gate1 entrance0 gate7 general-gate7
+general-gate5,111,124,gate4 entrance2 camping8 gate3 general-gate2 general-gate0 camping1 general-gate3 general-gate6 gate5 camping6 gate8 entrance4
+gate4,114,164,general-gate6 gate5 camping6 gate8 entrance4 general-gate5 entrance2 camping8 gate3 general-gate2 general-gate0 camping1 general-gate3 ranger-stop5
+ranger-stop5,118,151,gate4
+camping5,121,20,general-gate7 ranger-stop4
+general-gate6,137,136,camping7 gate4 entrance2 general-gate5 camping8 gate3 general-gate2 general-gate0 camping1 general-gate3 gate5 camping6 gate8 entrance4
+general-gate7,144,65,gate7 gate6 entrance3 general-gate4 gate0 general-gate1 entrance0 gate1 camping0 camping3 camping4 entrance1 camping2 gate2 camping5 ranger-stop4
+camping7,145,181,general-gate6
+gate5,146,131,camping6 gate8 entrance4 general-gate6 gate4 entrance2 general-gate5 camping8 gate3 general-gate2 general-gate0 camping1 general-gate3 ranger-stop6
+ranger-stop6,147,123,gate5 gate6
+gate6,151,116,ranger-stop6 entrance3 gate7 general-gate7 general-gate4 gate0 general-gate1 entrance0
+ranger-stop7,152,100,gate7
+gate7,160,97,general-gate7 gate6 entrance3 general-gate4 gate0 general-gate1 entrance0 ranger-stop7
+entrance3,167,115,gate6 gate7 general-gate7 general-gate4 gate0 general-gate1 entrance0
+ranger-base,175,128,gate8
+camping6,177,150,gate8 entrance4 gate5 general-gate6 gate4 entrance2 general-gate5 camping8 gate3 general-gate2 general-gate0 camping1 general-gate3
+gate8,181,138,entrance4 camping6 gate5 general-gate6 gate4 entrance2 general-gate5 camping8 gate3 general-gate2 general-gate0 camping1 general-gate3 ranger-base
+entrance4,184,140,gate8 camping6 gate5 general-gate6 gate4 entrance2 general-gate5 camping8 gate3 general-gate2 general-gate0 camping1 general-gate3
