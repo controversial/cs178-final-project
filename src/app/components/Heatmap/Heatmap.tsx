@@ -11,11 +11,11 @@ import classNames from 'classnames/bind';
 import styles from './Heatmap.module.scss';
 const cx = classNames.bind(styles);
 
-console.time('trips query');
-const trips = await conn.query('SELECT gateName, tripId, timestamp FROM sensor_readings');
-console.timeEnd('trips query');
-console.log(trips.numRows, trips.numCols);
-console.log({ ...trips.toArray()[0] });
+// console.time('trips query');
+// const trips = await conn.query('SELECT gateName, tripId, timestamp FROM sensor_readings');
+// console.timeEnd('trips query');
+// console.log(trips.numRows, trips.numCols);
+// console.log({ ...trips.toArray()[0] });
 
 
 export default function Heatmap() {
