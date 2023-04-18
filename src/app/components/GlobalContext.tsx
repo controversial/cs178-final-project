@@ -1,8 +1,11 @@
 import React, { createContext, useContext } from 'react';
 
-const GlobalContext = createContext<{
-  // TODO: fill out
-} | null>(null);
+interface IGlobalContext {
+  filters: Record<string, string[]>;
+  setFilters: React.Dispatch<React.SetStateAction<Record<string, string[]>>>;
+}
+
+const GlobalContext = createContext<IGlobalContext | null>(null);
 
 export function GlobalContextProvider({
   children,

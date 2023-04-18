@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 
 import { GlobalContextProvider } from './components/GlobalContext';
 
@@ -16,8 +16,10 @@ const Heatmap = React.lazy(() => import('./components/Heatmap'));
 const TripExaminer = React.lazy(() => import('./components/TripExaminer'));
 
 export default function App() {
+  const [filters, setFilters] = useState<Record<string, string[]>>({});
+
   return (
-    <GlobalContextProvider>
+    <GlobalContextProvider filters={filters} setFilters={setFilters}>
       <div className={cx('base')}>
         <h1>CS178 Final Project</h1>
         <Suspense fallback={<p>Loading...</p>}>
