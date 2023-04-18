@@ -13,6 +13,7 @@ const Status = React.lazy(async () => {
   };
 });
 const Heatmap = React.lazy(() => import('./components/Heatmap'));
+const TripExaminer = React.lazy(() => import('./components/TripExaminer'));
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Suspense fallback={<p>Loading...</p>}>
           <Status />
           <Heatmap />
+          <TripExaminer />
         </Suspense>
       </div>
     </GlobalContextProvider>
