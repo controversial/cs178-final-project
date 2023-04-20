@@ -16,7 +16,9 @@ export default function useDbQuery(statements: string[] = [], columns: string[] 
   useEffect(() => {
     if (loading) return;
 
-    conn.query(columnsJoined + statements.join(' ') + filtersJoined).then(setRes);
+    const query = columnsJoined + statements.join(' ') + filtersJoined;
+    console.info('query', query);
+    conn.query(query).then(setRes);
     setLoading(true);
   }, [columnsJoined, filtersJoined, loading, statements]);
 

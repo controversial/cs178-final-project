@@ -24,8 +24,10 @@ export default function App() {
         <h1>CS178 Final Project</h1>
         <Suspense fallback={<p>Loading...</p>}>
           <Status />
-          <Heatmap />
-          <TripExaminer />
+          <div className={cx('container')}>
+            <Heatmap />
+            <TripExaminer selectedGates={[]} />
+          </div>
         </Suspense>
       </div>
     </GlobalContextProvider>
