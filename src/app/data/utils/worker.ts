@@ -1,7 +1,6 @@
 /* eslint-env worker */
 
 import CSVParser from './csv-parser';
-import { tableFromJSON, tableToIPC } from 'apache-arrow';
 import { rowSchema, messageToWorkerSchema, gateTypeSchema } from './schemas';
 import type { MessageFromWorker, Row } from './schemas';
 
@@ -53,22 +52,12 @@ globalThis.addEventListener('message', async (event: MessageEvent<unknown>) => {
   });
 
 
-  // Make an IPC stream of the data to make DuckDB faster
-  let ipc = null;
-  if (transformedRows.length) {
-    const table = tableFromJSON(transformedRows);
-    ipc = tableToIPC(table);
-  }
-
   // Send processed data back to the main thread
 
   globalThis.postMessage(
     {
       type: 'rows',
       data: transformedRows,
-      arrowData: ipc,
     } satisfies MessageFromWorker,
-    // @ts-ignore
-    ipc ? [ipc.buffer] : undefined,
   );
 });

@@ -13,8 +13,6 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ."
   },
   "dependencies": {
-    "@duckdb/duckdb-wasm": "^1.24.0",
-    "apache-arrow": "^11.0.0",
     "classnames": "^2.3.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

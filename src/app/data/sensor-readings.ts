@@ -1,6 +1,5 @@
 import { messageFromWorkerSchema } from './utils/schemas';
 import type { MessageToWorker, Row } from './utils/schemas';
-import * as db from './database';
 
 
 console.log(`[${(performance.now() / 1000).toFixed(4)}s]  script executing`);
@@ -27,7 +26,6 @@ await fetch('/sensor-data.csv')
     let chunksSent = 0;
     let chunksReceived = 0;
 
-    const dbPromises: Promise<void>[] = [];
     // Get ready to receive rows back from the worker
     worker.addEventListener('message', (e: MessageEvent<unknown>) => {
       const message = messageFromWorkerSchema.parse(e.data);
@@ -39,15 +37,11 @@ await fetch('/sensor-data.csv')
           for (let i = 0; i < message.data.length; i += 1000) {
             rows.push(...message.data.slice(i, i + 1000));
           }
-
-          if (message.arrowData) {
-            dbPromises.push(db.insertArrow(message.arrowData).catch((err) => reject(err)));
-          }
         }
         // Check success condition
         if (finishedSending && chunksSent === chunksReceived) {
           console.log(`[${(performance.now() / 1000).toFixed(4)}s]  Finished loading ${rows.length.toLocaleString()} rows`);
-          Promise.all(dbPromises).then(() => resolve());
+          resolve();
         }
       // make Typescript enforce that we handled all cases
       } else assertNever(message.type);

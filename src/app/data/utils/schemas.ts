@@ -51,7 +51,6 @@ export const messageFromWorkerSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('rows'),
     data: z.custom<Row[]>(),
-    arrowData: z.instanceof(Uint8Array).or(z.null()),
   }),
 ]);
 export type MessageFromWorker = z.infer<typeof messageFromWorkerSchema>;
