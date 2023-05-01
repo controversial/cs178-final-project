@@ -13,7 +13,6 @@ const Status = React.lazy(async () => {
   };
 });
 const Heatmap = React.lazy(() => import('./components/Heatmap'));
-const TripExaminer = React.lazy(() => import('./components/TripExaminer'));
 
 export default function App() {
   const [filters, setFilters] = useState<Record<string, string[]>>({});
@@ -26,7 +25,6 @@ export default function App() {
           <Status />
           <div className={cx('container')}>
             <Heatmap />
-            <TripExaminer selectedGates={[]} />
           </div>
         </Suspense>
       </div>
