@@ -11,16 +11,16 @@ function TripTime({
   width: number;
   height: number;
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
-  const { selectedTrips, allTrips } = useData();
+  const { selectedTrips, filteredTrips } = useData();
 
   const tripsSegmentTimes = useMemo(() => new Map(
-    [...selectedTrips].map((tripId) => {
-      const trip = allTrips.get(tripId);
-      if (!trip) throw new Error('missing trip (invariant violation)');
+    [...selectedTrips].flatMap((tripId) => {
+      const trip = filteredTrips.get(tripId);
+      if (!trip) return [];
       const segmentTimes = trip.slice(0, -1).map((r, i) => +trip[i + 1]!.timestamp - +r.timestamp);
-      return [tripId, segmentTimes];
+      return [[tripId, segmentTimes]];
     }),
-  ), [allTrips, selectedTrips]);
+  ), [filteredTrips, selectedTrips]);
 
   const scaleX = useMemo(
     () => d3.scaleLinear()
