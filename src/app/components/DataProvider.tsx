@@ -17,7 +17,7 @@ function useDataContextValue() {
   // Filter sensor readings
   const filteredReadings = useMemo(() => {
     let filtered = rows;
-    if (vehicleTypeFilter) {
+    if (vehicleTypeFilter.length) {
       filtered = filtered.filter((row) => vehicleTypeFilter.includes(row.carType));
     }
     if (timeFilter) {
