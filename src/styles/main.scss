@@ -16,6 +16,7 @@ $text-hint: color.scale($white, $alpha: -60%);
 body {
   background-color: $black;
   color: $text;
+  color-scheme: dark;
 }
 
 html {
