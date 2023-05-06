@@ -26,6 +26,7 @@ export const rowSchema = z.tuple([
   z.enum(['1', '2', '2P', '3', '4', '5', '6']),
   gateNameSchema,
 ]).transform(([timestamp, carId, carType, gateName]) => ({
+  id: globalThis.crypto.randomUUID(),
   timestamp,
   carId,
   carType,
