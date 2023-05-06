@@ -1,4 +1,12 @@
 .base {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 0;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 2fr 3fr 2fr 2fr;
+
   h1 {
     text-align: center;
   }
