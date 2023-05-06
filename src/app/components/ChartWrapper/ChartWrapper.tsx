@@ -7,7 +7,7 @@ const cx = classNames.bind(styles);
 
 
 export default function wrapChart<T>(
-  Component: React.ComponentType<{ width: number, height: number } & T>,
+  Component: React.ComponentType<T & { width: number, height: number }>,
 ) {
   return function WrappedChart(props: Omit<T, 'width' | 'height'>) {
     const [baseRef, [width, height]] = useElementSize();
