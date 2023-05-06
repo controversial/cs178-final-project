@@ -5,19 +5,24 @@ import { useData } from '../DataProvider';
 import type { Row } from '../../data/utils/schemas';
 import wrapChart from '../ChartWrapper/ChartWrapper';
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] as const;
 
-
-function Histogram({ width, height }: { width: number, height: number }) {
+function Histogram<T extends { toString(): string }>({
+  width,
+  height,
+  accessor,
+  bins,
+}: {
+  width: number,
+  height: number,
+  accessor: (d: Row) => T,
+  bins: T[],
+}) {
   const { filteredReadings } = useData();
 
-  const getMonth = (d: Row) => d.timestamp.getUTCMonth();
-
-  // const monthCounts = useMemo(() => {}, []);
-  const monthCounts = months.map(() => 0);
+  const freqs = bins.map(() => 0);
   filteredReadings.forEach((reading) => {
-    const month = reading.timestamp.getUTCMonth();
-    monthCounts[month] += 1;
+    const key = accessor(reading);
+    freqs[bins.indexOf(key)] += 1;
   });
 
   const xMax = width;
@@ -25,30 +30,30 @@ function Histogram({ width, height }: { width: number, height: number }) {
 
   // scales, memoize for performance
   const xScale = useMemo(
-    () => d3.scaleBand<number>()
+    () => d3.scaleBand<T>()
       .range([0, xMax])
       .round(true)
-      .domain(filteredReadings.map(getMonth))
+      .domain(filteredReadings.map(accessor))
       .padding(0.4),
-    [xMax, filteredReadings],
+    [xMax, filteredReadings, accessor],
   );
   const yScale = useMemo(
     () => d3.scaleLinear()
       .rangeRound([yMax, 0])
-      .domain([0, Math.max(...monthCounts)]),
-    [yMax, monthCounts],
+      .domain([0, Math.max(...freqs)]),
+    [yMax, freqs],
   );
 
   return (
     <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-      {monthCounts.map((count, monthIdx) => {
+      {freqs.map((count, binIdx) => {
         const barWidth = xScale.bandwidth();
         const barHeight = yMax - yScale(count);
-        const barX = xScale(monthIdx);
+        const barX = xScale(bins[binIdx]!);
         const barY = yMax - barHeight;
         return (
           <rect
-            key={`bar-${months[monthIdx]}`}
+            key={`bar-${freqs[binIdx]}`}
             x={barX}
             y={barY}
             width={barWidth}
