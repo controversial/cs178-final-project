@@ -31,7 +31,7 @@ function TripTime({
   const scaleY = useMemo(
     () => d3.scaleLinear()
       .domain([0, Math.max(...[...tripsSegmentTimes.values()].flat())])
-      .range([0, height]),
+      .range([height, 0]),
     [tripsSegmentTimes, height],
   );
 
@@ -39,7 +39,10 @@ function TripTime({
     <svg {...props} width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       {[...tripsSegmentTimes.entries()].map(([tripId, segmentTimes]) => {
         const line = d3.line().curve(d3.curveNatural);
-        const path = line(segmentTimes.map((t, i) => [scaleX(i), scaleY(t)]));
+        const path = line([
+          [scaleX(0), scaleY(0)],
+          ...segmentTimes.map((t, i): [number, number] => [scaleX(i + 1), scaleY(t)]),
+        ]);
         if (!path) return null;
         return (
           <g key={tripId}>
