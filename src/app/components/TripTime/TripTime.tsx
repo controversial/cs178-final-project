@@ -3,7 +3,12 @@ import * as d3 from 'd3';
 import wrapChart from '../ChartWrapper/ChartWrapper';
 import { useData } from '../DataProvider';
 
-function TripTime({
+import styles from './TripTime.module.scss';
+import classNamesBinder from 'classnames/bind';
+import classNames from 'classnames';
+const cx = classNamesBinder.bind(styles);
+
+function TripTimeSvg({
   width,
   height,
   ...props
@@ -54,4 +59,16 @@ function TripTime({
   );
 }
 
-export default wrapChart(TripTime);
+const TripTimeGraph = wrapChart(TripTimeSvg);
+
+export default function TripTime({
+  className,
+  ...props
+}: React.ComponentProps<typeof TripTimeGraph>) {
+  return (
+    <div className={classNames(cx('base'), className)}>
+      Selected Trips: Time Between Sensor Readings
+      <TripTimeGraph {...props} />
+    </div>
+  );
+}
