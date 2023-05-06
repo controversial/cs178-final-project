@@ -1,0 +1,28 @@
+.base {
+  position: relative;
+  contain: layout;
+
+  .sectionTitle {
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .scroll {
+    position: absolute;
+    top: 1.75rem;
+    bottom: 0;
+    width: 100%;
+    overflow: scroll;
+
+    .inner {
+      width: 100%;
+      position: relative;
+
+      .trip {
+        display: grid;
+        grid-template-columns: 0.25fr 1fr 1fr 1fr;
+        align-items: center;
+      }
+    }
+  }
+}

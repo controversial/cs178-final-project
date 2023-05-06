@@ -3,6 +3,8 @@ import TripTime from './components/TripTime';
 import Histogram from './components/Histogram';
 import VehicleFilter from './components/VehicleFilter';
 import Heatmap from './components/Heatmap/Heatmap';
+import TripSelector from './components/TripSelector';
+
 
 import styles from './index.module.scss';
 import classNames from 'classnames/bind';
@@ -35,6 +37,7 @@ export default function App() {
             className={cx('selected-trips-time')}
           />
           <VehicleFilter className={cx('vehicle-filter')} />
+          <TripSelector className={cx('trip-selector')} />
         </DataProvider>
       </Suspense>
     </div>
