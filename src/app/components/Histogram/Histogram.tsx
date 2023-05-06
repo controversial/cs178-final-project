@@ -5,8 +5,13 @@ import { useData } from '../DataProvider';
 import type { Row } from '../../data/utils/schemas';
 import wrapChart from '../ChartWrapper/ChartWrapper';
 
+import styles from './Histogram.module.scss';
+import classNamesBinder from 'classnames/bind';
+import classNames from 'classnames';
+const cx = classNamesBinder.bind(styles);
 
-function Histogram<T extends { toString(): string }>({
+
+function HistogramBarsSvg<T extends { toString(): string }>({
   width,
   height,
   accessor,
@@ -67,4 +72,20 @@ function Histogram<T extends { toString(): string }>({
   );
 }
 
-export default wrapChart(Histogram);
+const HistogramBars = wrapChart(HistogramBarsSvg);
+
+
+export default function Histogram({
+  label,
+  className,
+  ...props
+}: {
+  label: React.ReactNode,
+} & React.ComponentProps<typeof HistogramBars>) {
+  return (
+    <div className={classNames(cx('base'), className)}>
+      {label}
+      <HistogramBars {...props} />
+    </div>
+  );
+}

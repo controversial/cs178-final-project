@@ -17,11 +17,13 @@ export default function App() {
       <Suspense fallback={<p>Loading...</p>}>
         <DataProvider>
           <Histogram
+            label="Histogram: Months"
             className={cx('month-histogram')}
             accessor={useCallback((d) => d.timestamp.getUTCMonth(), [])}
             bins={new Array(12).fill(0).map((_, i) => i)}
           />
           <Histogram
+            label="Histogram: Hours"
             className={cx('time-histogram')}
             accessor={useCallback((d) => d.timestamp.getUTCHours(), [])}
             bins={new Array(24).fill(0).map((_, i) => i)}
