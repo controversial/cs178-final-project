@@ -3,7 +3,14 @@ import * as d3 from 'd3';
 import wrapChart from '../ChartWrapper/ChartWrapper';
 import { useData } from '../DataProvider';
 
-function TripTime({ width, height }: { width: number, height: number }) {
+function TripTime({
+  width,
+  height,
+  ...props
+}: {
+  width: number;
+  height: number;
+} & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const { selectedTrips, allTrips } = useData();
 
   const tripsSegmentTimes = useMemo(() => new Map(
@@ -29,7 +36,7 @@ function TripTime({ width, height }: { width: number, height: number }) {
   );
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+    <svg {...props} width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       {[...tripsSegmentTimes.entries()].map(([tripId, segmentTimes]) => {
         const line = d3.line().curve(d3.curveNatural);
         const path = line(segmentTimes.map((t, i) => [scaleX(i), scaleY(t)]));

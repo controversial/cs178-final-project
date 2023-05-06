@@ -11,12 +11,13 @@ function Histogram<T extends { toString(): string }>({
   height,
   accessor,
   bins,
+  ...props
 }: {
   width: number,
   height: number,
   accessor: (d: Row) => T,
   bins: T[],
-}) {
+} & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const { filteredReadings } = useData();
 
   const freqs = bins.map(() => 0);
@@ -45,7 +46,7 @@ function Histogram<T extends { toString(): string }>({
   );
 
   return (
-    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+    <svg {...props} width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       {freqs.map((count, binIdx) => {
         const barWidth = xScale.bandwidth();
         const barHeight = yMax - yScale(count);
