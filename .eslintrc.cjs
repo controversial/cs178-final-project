@@ -47,6 +47,8 @@ const rules = {
   "@typescript-eslint/func-call-spacing": ["error", "never"],
   "no-spaced-func": "off",
 
+  "react/prop-types": "off",
+
   "no-use-before-define": "off",
   "@typescript-eslint/no-use-before-define": ["error", { "ignoreTypeReferences": false }],
   "no-restricted-syntax": [
