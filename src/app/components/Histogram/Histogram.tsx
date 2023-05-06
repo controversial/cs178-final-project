@@ -54,7 +54,7 @@ function Histogram<T extends { toString(): string }>({
         const barY = yMax - barHeight;
         return (
           <rect
-            key={`bar-${freqs[binIdx]}`}
+            key={`bar-${binIdx}`}
             x={barX}
             y={barY}
             width={barWidth}
