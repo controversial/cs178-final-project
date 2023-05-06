@@ -14,3 +14,23 @@
     text-align: center;
   }
 }
+
+.month-histogram {
+  grid-row: 1;
+  grid-column: 1;
+}
+
+.time-histogram {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.heatmap {
+  grid-row: 2 / span 2;
+  grid-column: 1;
+}
+
+.selected-trips-time {
+  grid-row: 2;
+  grid-column: 2;
+}
