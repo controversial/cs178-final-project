@@ -1,12 +1,16 @@
 .base {
   text-align: center;
-
   width: 100%;
+  font-weight: bold;
 
   label:not(:last-child) {
     margin-right: 15px;
   }
+  label {
+    font-weight: normal;
+  }
   input {
     margin-right: 5px;
   }
+
 }
