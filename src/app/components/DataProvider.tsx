@@ -1,5 +1,5 @@
 import React, { useContext, createContext, useState, useMemo } from 'react';
-import { Row } from '../data/utils/schemas';
+import { CarType, Row } from '../data/utils/schemas';
 import * as d3 from 'd3';
 
 
@@ -8,7 +8,7 @@ const trips = d3.group(rows, (r) => r.tripId);
 
 
 function useDataContextValue() {
-  const [vehicleTypeFilter, setVehicleTypeFilter] = useState<Row['carType'][]>([]);
+  const [vehicleTypeFilter, setVehicleTypeFilter] = useState<CarType[]>([]);
   const [timeFilter, setTimeFilter] = useState<{ start: number, end: number } | false>(false);
   const [dateFilter, setDateFilter] = useState<{ start: Date, end: Date } | false>(false);
 

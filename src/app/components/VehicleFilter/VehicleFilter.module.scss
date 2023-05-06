@@ -1,0 +1,12 @@
+.base {
+  text-align: center;
+
+  width: 100%;
+
+  label:not(:last-child) {
+    margin-right: 15px;
+  }
+  input {
+    margin-right: 5px;
+  }
+}

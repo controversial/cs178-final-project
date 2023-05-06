@@ -1,10 +1,11 @@
 import React, { Suspense, useCallback } from 'react';
 import TripTime from './components/TripTime';
 import Histogram from './components/Histogram';
+import VehicleFilter from './components/VehicleFilter';
+import Heatmap from './components/Heatmap/Heatmap';
 
 import styles from './index.module.scss';
 import classNames from 'classnames/bind';
-import Heatmap from './components/Heatmap/Heatmap';
 const cx = classNames.bind(styles);
 
 const DataProvider = React.lazy(() => import('./components/DataProvider'));
@@ -31,6 +32,7 @@ export default function App() {
           <TripTime
             className={cx('selected-trips-time')}
           />
+          <VehicleFilter className={cx('vehicle-filter')} />
         </DataProvider>
       </Suspense>
     </div>

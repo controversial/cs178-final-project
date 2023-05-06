@@ -14,16 +14,19 @@ const gateNames = [
   'ranger-base',
   'camping0', 'camping1', 'camping2', 'camping3', 'camping4', 'camping5', 'camping6', 'camping7', 'camping8',
 ] as const;
-
 export const gateNameSchema = z.enum(gateNames);
 export const gateTypeSchema = z.enum([
   'entrance', 'gate', 'general-gate', 'ranger-stop', 'ranger-base', 'camping',
 ]);
 
+export const carTypes = ['1', '2', '2P', '3', '4', '5', '6'] as const;
+export type CarType = typeof carTypes[number];
+
+
 export const rowSchema = z.tuple([
   z.string().transform((s) => new Date(s)),
   z.string(),
-  z.enum(['1', '2', '2P', '3', '4', '5', '6']),
+  z.enum(carTypes),
   gateNameSchema,
 ]).transform(([timestamp, carId, carType, gateName]) => ({
   id: globalThis.crypto.randomUUID(),
@@ -38,7 +41,7 @@ export type Row = BaseRow & {
   tripId: number;
   gateType: z.infer<typeof gateTypeSchema>;
 };
-
+export type Trip = Row[];
 
 /*
  * 02. Schemas and types for messages passed between the CSV worker and the main thread
