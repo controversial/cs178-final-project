@@ -66,9 +66,9 @@ export default function TripTime({
   ...props
 }: React.ComponentProps<typeof TripTimeGraph>) {
   return (
-    <div className={classNames(cx('base'), className)}>
-      Selected Trips: Time Between Sensor Readings
+    <figure className={classNames(cx('base'), className)}>
+      <figcaption>Selected Trips: Time Between Sensor Readings</figcaption>
       <TripTimeGraph {...props} />
-    </div>
+    </figure>
   );
 }

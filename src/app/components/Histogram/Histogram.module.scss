@@ -2,6 +2,9 @@
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: min-content 1fr;
-  font-weight: bold;
-  text-align: center;
+
+  figcaption {
+    font-weight: bold;
+    text-align: center;
+  }
 }

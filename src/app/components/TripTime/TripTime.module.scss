@@ -1,8 +1,10 @@
 .base {
-  font-weight: bold;
-  text-align: center;
-
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: min-content 1fr;
+
+  figcaption {
+    font-weight: bold;
+    text-align: center;
+  }
 }

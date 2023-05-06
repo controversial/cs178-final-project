@@ -28,7 +28,8 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
   const widthScale = d3.scaleLinear().domain([0, d3.max(Object.values(freqs))!]).range([0, 20]);
 
   return (
-    <div className={classNames(cx('base'), className)} {...props}>
+    <figure className={classNames(cx('base'), className)} {...props}>
+      <figcaption>Heatmap</figcaption>
       <svg viewBox="0 0 200 200">
         {Object.entries(freqs).map(([key, freq]) => {
           const [from, to] = key.split('--').map((gn) => gateNameSchema.parse(gn));
@@ -40,6 +41,6 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
       </svg>
 
       <img src="/basemap.bmp" alt="Base map of the Lekagul Preserve" />
-    </div>
+    </figure>
   );
 }

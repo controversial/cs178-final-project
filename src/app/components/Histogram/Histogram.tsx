@@ -83,9 +83,9 @@ export default function Histogram({
   label: React.ReactNode,
 } & React.ComponentProps<typeof HistogramBars>) {
   return (
-    <div className={classNames(cx('base'), className)}>
-      {label}
+    <figure className={classNames(cx('base'), className)}>
+      <figcaption>{label}</figcaption>
       <HistogramBars {...props} />
-    </div>
+    </figure>
   );
 }
