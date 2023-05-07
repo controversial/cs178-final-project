@@ -45,7 +45,7 @@ function HistogramBarsSvg<T extends { toString(): string }>({
   );
   const yScale = useMemo(
     () => d3.scaleLinear()
-      .rangeRound([yMax, 0])
+      .rangeRound([yMax, 20])
       .domain([0, Math.max(...freqs)]),
     [yMax, freqs],
   );
@@ -57,15 +57,30 @@ function HistogramBarsSvg<T extends { toString(): string }>({
         const barHeight = yMax - yScale(count);
         const barX = xScale(bins[binIdx]!);
         const barY = yMax - barHeight;
+        const labelX = barX + barWidth / 2;
+        console.log('barx', barX);
+        console.log('labelx', labelX);
+        const labelY = yMax - 15;
+        console.log(bins[binIdx]);
         return (
-          <rect
-            key={`bar-${binIdx}`}
-            x={barX}
-            y={barY}
-            width={barWidth}
-            height={barHeight}
-            fill="blue"
-          />
+          <g key={`bar-${binIdx}`}>
+            <rect
+              x={barX}
+              y={barY - 20}
+              width={barWidth}
+              height={barHeight}
+              fill="blue"
+            />
+            <text
+              x={labelX}
+              y={labelY}
+              fill="white"
+              textAnchor="middle"
+              dominantBaseline="hanging"
+            >
+              {bins[binIdx]}
+            </text>
+          </g>
         );
       })}
     </svg>
