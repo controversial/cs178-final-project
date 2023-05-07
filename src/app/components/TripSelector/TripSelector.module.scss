@@ -26,3 +26,15 @@
     }
   }
 }
+
+.base table {
+  th {
+    text-align: left;
+  }
+}
+
+.checkbox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
