@@ -27,6 +27,7 @@ export interface GlobalState {
   selectedGates: Set<Row['gateName']>;
   selectGate: (gateName: Row['gateName']) => void;
   deselectGate: (gateName: Row['gateName']) => void;
+  clearSelectedGates: () => void;
 
   selectedTripsHighlightX: number | null;
   setSelectedTripsHighlightX: (x: number | null) => void;
@@ -78,6 +79,7 @@ const useGlobalStore = create<GlobalState>((set, get) => ({
     newSet.delete(gameName);
     return { selectedGates: newSet };
   }),
+  clearSelectedGates: () => set({ selectedGates: new Set() }),
 
   selectedTripsHighlightX: null,
   setSelectedTripsHighlightX: (x) => set({ selectedTripsHighlightX: x }),

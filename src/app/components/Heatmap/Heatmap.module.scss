@@ -28,4 +28,10 @@
       vector-effect: non-scaling-stroke;
     }
   }
+
+  button.clear {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
 }

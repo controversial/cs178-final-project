@@ -19,6 +19,7 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
   const selectedGates = useGlobalStore((state) => state.selectedGates);
   const selectGate = useGlobalStore((state) => state.selectGate);
   const deselectGate = useGlobalStore((state) => state.deselectGate);
+  const clearSelectedGates = useGlobalStore((state) => state.clearSelectedGates);
 
   const freqs = useMemo(() => {
     const out: Partial<Record<`${Row['gateName']}--${Row['gateName']}`, number>> = {};
@@ -75,6 +76,15 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
       </svg>
 
       <img src={`${import.meta.env.BASE_URL}basemap.bmp`} alt="Base map of the Lekagul Preserve" />
+      {selectedGates.size ? (
+        <button
+          className={cx('clear')}
+          type="button"
+          onClick={clearSelectedGates}
+        >
+          Clear
+        </button>
+      ) : null}
     </figure>
   );
 }
