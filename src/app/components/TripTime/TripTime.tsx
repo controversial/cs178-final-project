@@ -22,7 +22,12 @@ function TripTimeSvg({
     [...selectedTrips].flatMap((tripId) => {
       const trip = filteredTrips.get(tripId);
       if (!trip) return [];
-      const segmentTimes = trip.slice(0, -1).map((r, i) => +trip[i + 1]!.timestamp - +r.timestamp);
+      const segmentTimes = trip
+        .map((r, i) => (
+          i === 0
+            ? 0
+            : +r.timestamp - +trip[i - 1]!.timestamp
+        ));
       return [[tripId, segmentTimes]];
     }),
   ), [filteredTrips, selectedTrips]);
@@ -44,31 +49,20 @@ function TripTimeSvg({
     <svg {...props} width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       {[...tripsSegmentTimes.entries()].map(([tripId, segmentTimes]) => {
         const line = d3.line().curve(d3.curveMonotoneX);
-        const path = line([
-          [scaleX(0), scaleY(0)],
-          ...segmentTimes.map((t, i): [number, number] => [scaleX(i + 1), scaleY(t)]),
-        ]);
+        const path = line(segmentTimes.map((t, i) => [scaleX(i), scaleY(t)]));
         if (!path) return null;
         return (
           <g key={tripId}>
             <path d={path} fill="none" stroke="red" strokeWidth="2" />
             {segmentTimes.map((t, i) => (
               <circle
-                key={`${tripId}-${i + 1}`}
-                cx={scaleX(i + 1)}
+                key={`${tripId}-${i}`}
+                cx={scaleX(i)}
                 cy={scaleY(t)}
                 r="4"
                 fill="red"
               />
             ))}
-            {/* first circle */ }
-            <circle
-              key={`${tripId}-${0}`}
-              cx={scaleX(0)}
-              cy={scaleY(0)}
-              r="4"
-              fill="red"
-            />
           </g>
         );
       })}
