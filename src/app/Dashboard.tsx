@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { useData } from './components/DataProvider';
 
 import TripTime from './components/TripTime';
 import Histogram from './components/Histogram';
@@ -11,8 +12,10 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 export default function DashboardLayout() {
+  const { selectedTrips } = useData();
+
   return (
-    <div className={cx('base')}>
+    <div className={cx('base', { 'selected-trips': selectedTrips.size > 0 })}>
       <Histogram
         label="Histogram: Months"
         className={cx('month-histogram')}
