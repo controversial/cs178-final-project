@@ -14,11 +14,13 @@ const cx = classNamesBinder.bind(styles);
 function Circle({
   x,
   y,
+  color,
   onMouseEnter,
   onMouseLeave,
 }: {
   x: number;
   y: number;
+  color: string;
   onMouseEnter: React.MouseEventHandler<SVGCircleElement>;
   onMouseLeave: React.MouseEventHandler<SVGCircleElement>;
 }) {
@@ -26,7 +28,7 @@ function Circle({
 
   return (
     <g>
-      <circle ref={ref} cx={x} cy={y} r="4" fill="red" />
+      <circle ref={ref} cx={x} cy={y} r="4" fill={color} />
       <circle
         cx={x}
         cy={y}
@@ -56,6 +58,7 @@ function TripTimeSvg({
   height: number;
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
+  const selectedTripsColorScale = useGlobalStore((state) => state.computed.selectedTripsColorScale);
   const { filteredTrips } = useData();
 
   const tripsSegmentTimes = useMemo(() => new Map(
@@ -123,7 +126,7 @@ function TripTimeSvg({
           setHighlightX(graphX);
         }
       }}
-      onMouseLeave={() => { clearHighlightX(); }}
+      onMouseLeave={clearHighlightX}
     >
       <line
         x1={0}
@@ -151,12 +154,14 @@ function TripTimeSvg({
         const line = d3.line().curve(d3.curveMonotoneX);
         const path = line(segmentTimes.map((t, i) => [scaleX(i), scaleY(t)]));
         if (!path) return null;
+        const color = selectedTripsColorScale(tripId);
         return (
           <g key={tripId}>
-            <path d={path} fill="none" stroke="red" strokeWidth="2" />
+            <path d={path} fill="none" stroke={color} strokeWidth="2" />
             {segmentTimes.map((t, i) => (
               <Circle
                 key={`${tripId}-${i}`}
+                color={color}
                 x={scaleX(i)}
                 y={scaleY(t)}
                 onMouseEnter={() => setHoveredGate(filteredTrips.get(tripId)![i]!.gateName)}

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Row, CarType } from './data/utils/schemas';
+import * as d3 from 'd3';
 
 
 export interface GlobalState {
@@ -25,10 +26,14 @@ export interface GlobalState {
   selectedTripsHighlightX: number | null;
   setSelectedTripsHighlightX: (x: number | null) => void;
   clearSelectedTripsHighlightX: () => void;
+
+  computed: {
+    selectedTripsColorScale: d3.ScaleOrdinal<Row['tripId'], string>;
+  };
 }
 
 
-const useGlobalStore = create<GlobalState>((set) => ({
+const useGlobalStore = create<GlobalState>((set, get) => ({
   vehicleTypeFilter: [],
   toggleVehicleTypeFilter: (vt, included = true) => set((state) => ({
     vehicleTypeFilter: included
@@ -61,6 +66,12 @@ const useGlobalStore = create<GlobalState>((set) => ({
   selectedTripsHighlightX: null,
   setSelectedTripsHighlightX: (x) => set({ selectedTripsHighlightX: x }),
   clearSelectedTripsHighlightX: () => set({ selectedTripsHighlightX: null }),
+
+  computed: {
+    get selectedTripsColorScale() {
+      return d3.scaleOrdinal([...get().selectedTrips], d3.schemeCategory10);
+    },
+  },
 }));
 
 
