@@ -27,7 +27,8 @@ function TripTimeSvg({
           i === 0
             ? 0
             : +r.timestamp - +trip[i - 1]!.timestamp
-        ));
+        ))
+        .map((ms) => ms / 1000 / 60 / 60); // convert to hours
       return [[tripId, segmentTimes]];
     }),
   ), [filteredTrips, selectedTrips]);
@@ -35,7 +36,7 @@ function TripTimeSvg({
   const scaleX = useMemo(
     () => d3.scaleLinear()
       .domain([0, Math.max(...[...tripsSegmentTimes.values()].map((t) => t.length))])
-      .range([15, width - 5]),
+      .range([35, width - 5]),
     [tripsSegmentTimes, width],
   );
   const scaleY = useMemo(
@@ -45,8 +46,27 @@ function TripTimeSvg({
     [tripsSegmentTimes, height],
   );
 
+  const yAxis = useMemo(() => {
+    const ticks = scaleY.ticks(5);
+    return d3.axisLeft(scaleY).tickValues(ticks).tickFormat((d) => `${d3.format('~r')(d)}`);
+  }, [scaleY]);
+
   return (
     <svg {...props} width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+      <g transform={`translate(${45}, ${0})`}>
+        <g ref={(node) => { if (node) d3.select(node).call(yAxis); }} />
+        <text
+          x={-height / 2}
+          y={-35}
+          transform="rotate(-90)"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="white"
+          fontSize="15"
+        >
+          Elapsed Time (hrs)
+        </text>
+      </g>
       {[...tripsSegmentTimes.entries()].map(([tripId, segmentTimes]) => {
         const line = d3.line().curve(d3.curveMonotoneX);
         const path = line(segmentTimes.map((t, i) => [scaleX(i), scaleY(t)]));
