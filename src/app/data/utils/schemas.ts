@@ -6,7 +6,7 @@ import z from 'zod';
  */
 
 
-const gateNames = [
+export const gateNames = [
   'entrance0', 'entrance1', 'entrance2', 'entrance3', 'entrance4',
   'gate0', 'gate1', 'gate2', 'gate3', 'gate4', 'gate5', 'gate6', 'gate7', 'gate8',
   'general-gate0', 'general-gate1', 'general-gate2', 'general-gate3', 'general-gate4', 'general-gate5', 'general-gate6', 'general-gate7',

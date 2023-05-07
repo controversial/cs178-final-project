@@ -4,8 +4,7 @@ import useGlobalStore from '../../global-store';
 import * as d3 from 'd3';
 
 import { useData } from '../DataProvider';
-import type { Row } from '../../data/utils/schemas';
-import { gateNameSchema } from '../../data/utils/schemas';
+import { Row, gateNames, gateNameSchema } from '../../data/utils/schemas';
 import adjacencyGraph from '../../data/sensor-adjacency-graph';
 
 import classNames from 'classnames';
@@ -15,8 +14,12 @@ const cx = classNamesBinder.bind(styles);
 
 
 export default function Heatmap({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  const { allTrips: trips } = useData();
+  const { filteredTrips: trips } = useData();
   const hoveredGate = useGlobalStore((state) => state.hoveredGate);
+  const selectedGates = useGlobalStore((state) => state.selectedGates);
+  const selectGate = useGlobalStore((state) => state.selectGate);
+  const deselectGate = useGlobalStore((state) => state.deselectGate);
+
   const freqs = useMemo(() => {
     const out: Partial<Record<`${Row['gateName']}--${Row['gateName']}`, number>> = {};
     [...trips.values()].forEach((tripRows) => {
@@ -49,6 +52,26 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
             fill="blue"
           />
         )}
+        {gateNames.map((gn) => (
+          <g key={gn}>
+            <circle
+              cx={adjacencyGraph[gn].x}
+              cy={adjacencyGraph[gn].y}
+              r="2.5"
+              fill={selectedGates.has(gn) ? 'white' : 'black'}
+              stroke="white"
+              strokeWidth="1"
+            />
+            <circle
+              cx={adjacencyGraph[gn].x}
+              cy={adjacencyGraph[gn].y}
+              r="6"
+              fill="transparent"
+              onClick={() => (selectedGates.has(gn) ? deselectGate(gn) : selectGate(gn))}
+              style={{ cursor: 'pointer' }}
+            />
+          </g>
+        ))}
       </svg>
 
       <img src={`${import.meta.env.BASE_URL}basemap.bmp`} alt="Base map of the Lekagul Preserve" />

@@ -11,6 +11,7 @@ function useDataContextValue() {
   const vehicleTypeFilter = useGlobalStore((state) => state.vehicleTypeFilter);
   const timeFilter = useGlobalStore((state) => state.timeFilter);
   const dateFilter = useGlobalStore((state) => state.dateFilter);
+  const selectedGates = useGlobalStore((state) => state.selectedGates);
 
   // Filter sensor readings based off of vehicle type, without applying the other filters
   // This is for the histogram
@@ -47,9 +48,10 @@ function useDataContextValue() {
     new Map(
       [...trips].filter(([, tripRows]) => (
         tripRows.every((row) => filteredRowIds.has(row.id))
+        && (!(selectedGates.size) || tripRows.some((row) => selectedGates.has(row.gateName)))
       )),
     )
-  ), [filteredRowIds]);
+  ), [filteredRowIds, selectedGates]);
 
   return useMemo(() => ({
     allReadings: rows,
