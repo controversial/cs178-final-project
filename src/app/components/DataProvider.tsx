@@ -12,12 +12,16 @@ function useDataContextValue() {
   const timeFilter = useGlobalStore((state) => state.timeFilter);
   const dateFilter = useGlobalStore((state) => state.dateFilter);
 
-  // Filter sensor readings
+  // Filter sensor readings based off of vehicle type, without applying the other filters
+  // This is for the histogram
+  const vehicleTypeFilteredReadings = useMemo(() => (
+    vehicleTypeFilter.length ? rows.filter((row) => vehicleTypeFilter.includes(row.carType)) : rows
+  ), [vehicleTypeFilter]);
+
+
+  // Apply the rest of the filters
   const filteredReadings = useMemo(() => {
-    let filtered = rows;
-    if (vehicleTypeFilter.length) {
-      filtered = filtered.filter((row) => vehicleTypeFilter.includes(row.carType));
-    }
+    let filtered = vehicleTypeFilteredReadings;
     if (timeFilter) {
       filtered = filtered.filter((row) => {
         const hour = row.timestamp.getUTCHours()
@@ -32,7 +36,7 @@ function useDataContextValue() {
       ));
     }
     return filtered;
-  }, [vehicleTypeFilter, timeFilter, dateFilter]);
+  }, [vehicleTypeFilteredReadings, timeFilter, dateFilter]);
 
   // Filter trips to only include those that are covered *entirely* by the filtered readings
   const filteredRowIds = useMemo(
@@ -51,10 +55,16 @@ function useDataContextValue() {
     allReadings: rows,
     allTrips: trips,
 
+    vehicleTypeFilteredReadings,
     filteredReadings,
     filteredRowIds,
     filteredTrips,
-  }), [filteredReadings, filteredRowIds, filteredTrips]);
+  }), [
+    vehicleTypeFilteredReadings,
+    filteredReadings,
+    filteredRowIds,
+    filteredTrips,
+  ]);
 }
 
 

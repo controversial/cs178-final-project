@@ -26,7 +26,7 @@ function HistogramBarsSvg<T extends { toString(): string }>({
   bins: T[],
   binLabels?: string[],
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
-  const { filteredReadings } = useData();
+  const { vehicleTypeFilteredReadings: filteredReadings } = useData();
 
   const freqs = bins.map(() => 0);
   filteredReadings.forEach((reading) => {
