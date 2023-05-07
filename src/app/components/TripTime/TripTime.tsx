@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { useData } from '../DataProvider';
 import useGlobalStore from '../../global-store';
 
@@ -19,8 +19,6 @@ function TripTimeSvg({
   height: number;
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
-  const setHoveredGate = useGlobalStore((state) => state.setHoveredGate);
-  const clearHoveredGate = useGlobalStore((state) => state.clearHoveredGate);
   const { filteredTrips } = useData();
 
   const tripsSegmentTimes = useMemo(() => new Map(
@@ -56,8 +54,48 @@ function TripTimeSvg({
     return d3.axisLeft(scaleY).tickValues(ticks).tickFormat((d) => `${d3.format('~r')(d)}`);
   }, [scaleY]);
 
+  const setHoveredGate = useGlobalStore((state) => state.setHoveredGate);
+  const clearHoveredGate = useGlobalStore((state) => state.clearHoveredGate);
+
+  const highlightLineRef = useRef<SVGLineElement>(null);
+  const setHighlightX = useGlobalStore((state) => state.setSelectedTripsHighlightX);
+  const clearHighlightX = useGlobalStore((state) => state.clearSelectedTripsHighlightX);
+  useEffect(() => useGlobalStore.subscribe(({ selectedTripsHighlightX: highlightX }) => {
+    const highlightLine = highlightLineRef.current;
+    if (!highlightLine) return;
+    if (highlightX != null) {
+      highlightLine.setAttribute('transform', `translate(${scaleX(highlightX)}, 0)`);
+      highlightLine.removeAttribute('display');
+    } else {
+      highlightLine.setAttribute('display', 'none');
+    }
+  }), [scaleX]);
+
   return (
-    <svg {...props} width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
+    <svg
+      {...props}
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      onMouseMove={(e) => {
+        const svgX = e.nativeEvent.clientX - e.currentTarget.getBoundingClientRect().left;
+        const graphX = scaleX.invert(svgX);
+        if (graphX < 0 || graphX > scaleX.domain()[1]!) {
+          clearHighlightX();
+        } else {
+          setHighlightX(graphX);
+        }
+      }}
+      onMouseLeave={() => { clearHighlightX(); }}
+    >
+      <line
+        x1={0}
+        x2={0}
+        y1={0}
+        y2={height}
+        stroke="grey"
+        ref={highlightLineRef}
+      />
       <g transform={`translate(${45}, ${0})`}>
         <g ref={(node) => { if (node) d3.select(node).call(yAxis); }} />
         <text

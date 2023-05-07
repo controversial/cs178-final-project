@@ -21,6 +21,10 @@ export interface GlobalState {
   hoveredGate: Row['gateName'] | null;
   setHoveredGate: (gateName: Row['gateName'] | null) => void;
   clearHoveredGate: () => void;
+
+  selectedTripsHighlightX: number | null;
+  setSelectedTripsHighlightX: (x: number | null) => void;
+  clearSelectedTripsHighlightX: () => void;
 }
 
 
@@ -53,6 +57,10 @@ const useGlobalStore = create<GlobalState>((set) => ({
   hoveredGate: null,
   setHoveredGate: (gateName) => set({ hoveredGate: gateName }),
   clearHoveredGate: () => set({ hoveredGate: null }),
+
+  selectedTripsHighlightX: null,
+  setSelectedTripsHighlightX: (x) => set({ selectedTripsHighlightX: x }),
+  clearSelectedTripsHighlightX: () => set({ selectedTripsHighlightX: null }),
 }));
 
 
