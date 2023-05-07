@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
-import { useData } from './components/DataProvider';
+import { useData } from '../DataProvider';
 
-import TripTime from './components/TripTime';
-import Histogram from './components/Histogram';
-import VehicleFilter from './components/VehicleFilter';
-import Heatmap from './components/Heatmap/Heatmap';
-import TripSelector from './components/TripSelector';
+import TripTime from '../TripTime';
+import Histogram from '../Histogram';
+import VehicleFilter from '../VehicleFilter';
+import Heatmap from '../Heatmap/Heatmap';
+import TripSelector from '../TripSelector';
 
 import styles from './Dashboard.module.scss';
 import classNames from 'classnames/bind';

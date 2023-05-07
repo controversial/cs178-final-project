@@ -1,6 +1,6 @@
 import React, { Suspense } from 'react';
 
-import Dashboard from './Dashboard';
+import Dashboard from './components/Dashboard';
 const DataProvider = React.lazy(() => import('./components/DataProvider'));
 
 
