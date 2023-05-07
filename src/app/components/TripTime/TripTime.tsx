@@ -10,6 +10,43 @@ import classNamesBinder from 'classnames/bind';
 import classNames from 'classnames';
 const cx = classNamesBinder.bind(styles);
 
+
+function Circle({
+  x,
+  y,
+  onMouseEnter,
+  onMouseLeave,
+}: {
+  x: number;
+  y: number;
+  onMouseEnter: React.MouseEventHandler<SVGCircleElement>;
+  onMouseLeave: React.MouseEventHandler<SVGCircleElement>;
+}) {
+  const ref = useRef<SVGCircleElement>(null);
+
+  return (
+    <g>
+      <circle ref={ref} cx={x} cy={y} r="4" fill="red" />
+      <circle
+        cx={x}
+        cy={y}
+        r="10"
+        onMouseEnter={(e) => {
+          onMouseEnter(e);
+          ref.current?.setAttribute('r', '7');
+        }}
+        onMouseLeave={(e) => {
+          onMouseLeave(e);
+          ref.current?.setAttribute('r', '4');
+        }}
+        fill="transparent"
+        stroke="none"
+      />
+    </g>
+  );
+}
+
+
 function TripTimeSvg({
   width,
   height,
@@ -118,20 +155,12 @@ function TripTimeSvg({
           <g key={tripId}>
             <path d={path} fill="none" stroke="red" strokeWidth="2" />
             {segmentTimes.map((t, i) => (
-              <circle
+              <Circle
                 key={`${tripId}-${i}`}
-                cx={scaleX(i)}
-                cy={scaleY(t)}
-                r="4"
-                onMouseEnter={(e) => {
-                  setHoveredGate(filteredTrips.get(tripId)![i]!.gateName);
-                  e.currentTarget.setAttribute('r', '7');
-                }}
-                onMouseLeave={(e) => {
-                  clearHoveredGate();
-                  e.currentTarget.setAttribute('r', '4');
-                }}
-                fill="red"
+                x={scaleX(i)}
+                y={scaleY(t)}
+                onMouseEnter={() => setHoveredGate(filteredTrips.get(tripId)![i]!.gateName)}
+                onMouseLeave={clearHoveredGate}
               />
             ))}
           </g>
