@@ -12,10 +12,11 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 export default function DashboardLayout() {
-  const { selectedTrips } = useData();
+  const { selectedTrips, filteredTrips } = useData();
+  const visibleSelectedTrips = [...selectedTrips].filter((tripId) => filteredTrips.has(tripId));
 
   return (
-    <div className={cx('base', { 'selected-trips': selectedTrips.size > 0 })}>
+    <div className={cx('base', { 'selected-trips': visibleSelectedTrips.length > 0 })}>
       <Histogram
         label="Histogram: Months"
         className={cx('month-histogram')}
