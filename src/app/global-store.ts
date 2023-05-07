@@ -18,6 +18,7 @@ export interface GlobalState {
   selectedTrips: Set<Row['tripId']>;
   selectTrip: (tripId: Row['tripId']) => void;
   deselectTrip: (tripId: Row['tripId']) => void;
+  clearSelectedTrips: () => void;
 
   hoveredGate: Row['gateName'] | null;
   setHoveredGate: (gateName: Row['gateName'] | null) => void;
@@ -58,6 +59,7 @@ const useGlobalStore = create<GlobalState>((set, get) => ({
     newSet.delete(tripId);
     return { selectedTrips: newSet };
   }),
+  clearSelectedTrips: () => set({ selectedTrips: new Set() }),
 
   hoveredGate: null,
   setHoveredGate: (gateName) => set({ hoveredGate: gateName }),

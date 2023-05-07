@@ -181,10 +181,19 @@ export default function TripTime({
   className,
   ...props
 }: React.ComponentProps<typeof TripTimeGraph>) {
+  const clearSelectedTrips = useGlobalStore((state) => state.clearSelectedTrips);
+
   return (
     <figure className={classNames(cx('base'), className)}>
       <figcaption>Selected Trips: Time Between Sensor Readings</figcaption>
       <TripTimeGraph {...props} />
+      <button
+        className={cx('clear')}
+        type="button"
+        onClick={clearSelectedTrips}
+      >
+        Clear
+      </button>
     </figure>
   );
 }
