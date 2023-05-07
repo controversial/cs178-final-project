@@ -33,6 +33,7 @@ export default function TripSelector({ className, ...props }: React.HTMLAttribut
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
   const selectTrip = useGlobalStore((state) => state.selectTrip);
   const deselectTrip = useGlobalStore((state) => state.deselectTrip);
+  const selectedTripsColorScale = useGlobalStore((state) => state.computed.selectedTripsColorScale);
 
   const visibleColumnAccessor = useCallback((cellProps: CellContext<TripStats, unknown>) => (
     <div className={cx('cell', 'checkbox')}>
@@ -148,12 +149,17 @@ export default function TripSelector({ className, ...props }: React.HTMLAttribut
             )}
             {rowVirtualizer.getVirtualItems().map((virtualItem) => {
               const row = rows[virtualItem.index];
-
               if (!row) return null;
+              const { tripId } = row.original;
 
               return (
                 <tr
                   key={virtualItem.key}
+                  style={
+                    selectedTrips.has(tripId)
+                      ? { color: selectedTripsColorScale(tripId) }
+                      : {}
+                  }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id}>
