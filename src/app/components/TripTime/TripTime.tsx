@@ -52,6 +52,15 @@ function TripTimeSvg({
         return (
           <g key={tripId}>
             <path d={path} fill="none" stroke="red" strokeWidth="2" />
+            {segmentTimes.map((t, i) => (
+              <circle
+                key={`${tripId}-${i}`}
+                cx={scaleX(i + 1)}
+                cy={scaleY(t)}
+                r="4"
+                fill="red"
+              />
+            ))}
           </g>
         );
       })}
