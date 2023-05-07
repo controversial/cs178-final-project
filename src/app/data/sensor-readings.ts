@@ -18,8 +18,7 @@ export const worker = new Worker(
  */
 const rows: Row[] = [];
 
-
-await fetch('/sensor-data.csv')
+await fetch(`${import.meta.env.BASE_URL}sensor-data.csv`)
   .then((response) => new Promise<void>((resolve, reject) => {
     // Keep track of how many chunks we’ve sent to the worker, and whether we’ve sent the whole file
     let finishedSending = false;

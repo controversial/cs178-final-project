@@ -40,7 +40,7 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
         })}
       </svg>
 
-      <img src="/basemap.bmp" alt="Base map of the Lekagul Preserve" />
+      <img src={`${import.meta.env.BASE_URL}basemap.bmp`} alt="Base map of the Lekagul Preserve" />
     </figure>
   );
 }

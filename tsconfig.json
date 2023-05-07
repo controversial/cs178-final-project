@@ -16,6 +16,7 @@
     "jsx": "preserve",
     "incremental": true,
     "noUncheckedIndexedAccess": true,
+    "types": ["vite/client"],
   },
   "include": ["**/*.ts", "**/*.tsx", "**/*.js"],
   "exclude": ["**/node_modules"]
