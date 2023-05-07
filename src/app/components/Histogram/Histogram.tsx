@@ -18,6 +18,8 @@ function HistogramBarsSvg<T extends { toString(): string }>({
   accessor,
   bins,
   binLabels = undefined,
+  onBrush,
+  onClearBrush,
   ...props
 }: {
   width: number,
@@ -25,6 +27,8 @@ function HistogramBarsSvg<T extends { toString(): string }>({
   accessor: (d: Row) => T,
   bins: T[],
   binLabels?: string[],
+  onBrush: (startBinIndex: number, endBinIndex: number) => void,
+  onClearBrush: () => void,
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const { vehicleTypeFilteredReadings: filteredReadings } = useData();
 
@@ -53,36 +57,54 @@ function HistogramBarsSvg<T extends { toString(): string }>({
     [yMax, freqs],
   );
 
+  const brush = d3.brushX()
+    .extent([[0, 0], [xMax, yMax - 20]])
+    .on('end', (event: d3.D3BrushEvent<SVGGElement>) => {
+      if (!event.selection) {
+        onClearBrush();
+        return;
+      }
+      const binWidth = xScale.step();
+      const selection = event.selection as [number, number];
+      const startBinIndex = Math.floor(selection[0] / binWidth);
+      const endBinIndex = Math.floor(selection[1] / binWidth);
+
+      onBrush(startBinIndex, endBinIndex);
+    });
+
   return (
     <svg {...props} width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
-      {freqs.map((count, binIdx) => {
-        const barWidth = xScale.bandwidth();
-        const barHeight = yMax - yScale(count);
-        const barX = xScale(bins[binIdx]!)!;
-        const barY = yMax - barHeight;
-        const labelX = barX + barWidth / 2;
-        const labelY = yMax - 15;
-        return (
-          <g key={`bar-${binIdx}`}>
-            <rect
-              x={barX}
-              y={barY - 20}
-              width={barWidth}
-              height={barHeight}
-              fill="blue"
-            />
-            <text
-              x={labelX}
-              y={labelY}
-              fill="white"
-              textAnchor="middle"
-              dominantBaseline="hanging"
-            >
-              {(binLabels ? binLabels[binIdx] : bins[binIdx]?.toString()) ?? null}
-            </text>
-          </g>
-        );
-      })}
+      <g ref={(node) => { if (node) { d3.select(node).call(brush); } }}>
+        {freqs.map((count, binIdx) => {
+          const barWidth = xScale.bandwidth();
+          const barHeight = yMax - yScale(count);
+          const barX = xScale(bins[binIdx]!)!;
+          const barY = yMax - barHeight;
+          const labelX = barX + barWidth / 2;
+          const labelY = yMax - 15;
+          return (
+            <g key={`bar-${binIdx}`}>
+              <rect
+                x={barX}
+                y={barY - 20}
+                width={barWidth}
+                height={barHeight}
+                fill="blue"
+              />
+              <text
+                x={labelX}
+                y={labelY}
+                fill="white"
+                textAnchor="middle"
+                dominantBaseline="hanging"
+                fontSize={15}
+              >
+                {(binLabels ? binLabels[binIdx] : bins[binIdx]?.toString()) ?? null}
+              </text>
+            </g>
+          );
+        })}
+      </g>
     </svg>
   );
 }
