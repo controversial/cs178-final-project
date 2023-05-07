@@ -16,12 +16,14 @@ function HistogramBarsSvg<T extends { toString(): string }>({
   height,
   accessor,
   bins,
+  binLabels = undefined,
   ...props
 }: {
   width: number,
   height: number,
   accessor: (d: Row) => T,
   bins: T[],
+  binLabels?: string[],
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const { filteredReadings } = useData();
 
@@ -75,7 +77,7 @@ function HistogramBarsSvg<T extends { toString(): string }>({
               textAnchor="middle"
               dominantBaseline="hanging"
             >
-              {bins[binIdx]?.toString()}
+              {(binLabels ? binLabels[binIdx] : bins[binIdx]?.toString()) ?? null}
             </text>
           </g>
         );

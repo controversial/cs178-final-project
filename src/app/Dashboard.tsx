@@ -21,6 +21,7 @@ export default function DashboardLayout() {
         className={cx('month-histogram')}
         accessor={useCallback((d) => d.timestamp.getUTCMonth(), [])}
         bins={new Array(12).fill(0).map((_, i) => i)}
+        binLabels={new Array(12).fill(0).map((_, monthIdx) => new Date(2020, monthIdx).toLocaleString('default', { timeZone: 'UTC', month: 'short' }))}
       />
       <Histogram
         label="Histogram: Hours"
