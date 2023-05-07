@@ -30,13 +30,13 @@ function TripTimeSvg({
   const scaleX = useMemo(
     () => d3.scaleLinear()
       .domain([0, Math.max(...[...tripsSegmentTimes.values()].map((t) => t.length))])
-      .range([0, width]),
+      .range([15, width - 5]),
     [tripsSegmentTimes, width],
   );
   const scaleY = useMemo(
     () => d3.scaleLinear()
       .domain([0, Math.max(...[...tripsSegmentTimes.values()].flat())])
-      .range([height, 0]),
+      .range([height - 5, 5]),
     [tripsSegmentTimes, height],
   );
 
@@ -54,13 +54,21 @@ function TripTimeSvg({
             <path d={path} fill="none" stroke="red" strokeWidth="2" />
             {segmentTimes.map((t, i) => (
               <circle
-                key={`${tripId}-${i}`}
+                key={`${tripId}-${i + 1}`}
                 cx={scaleX(i + 1)}
                 cy={scaleY(t)}
                 r="4"
                 fill="red"
               />
             ))}
+            {/* first circle */ }
+            <circle
+              key={`${tripId}-${0}`}
+              cx={scaleX(0)}
+              cy={scaleY(0)}
+              r="4"
+              fill="red"
+            />
           </g>
         );
       })}
