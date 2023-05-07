@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 
 import { useData } from '../DataProvider';
 import { Row, gateNames, gateNameSchema } from '../../data/utils/schemas';
-import adjacencyGraph from '../../data/sensor-adjacency-graph';
+import { adjacencyGraph, paths } from './roadways';
 
 import classNames from 'classnames';
 import classNamesBinder from 'classnames/bind';

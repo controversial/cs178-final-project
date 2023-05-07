@@ -73,41 +73,12 @@ export type MessageToWorker = z.infer<typeof messageToWorkerSchema>;
  */
 
 
-export const adjacencyGraphRowSchema = z.tuple([
+export const sensorRowSchema = z.tuple([
   gateNameSchema,
   z.string().transform((y) => parseInt(y, 10)),
   z.string().transform((x) => parseInt(x, 10)),
-  z.string().transform((adjString) => z.array(gateNameSchema).parse(adjString.split(' '))),
-]).transform(([id, y, x, adjacencies]) => ({
+]).transform(([id, y, x]) => ({
   id,
   x,
   y,
-  adjacentGates: adjacencies,
 }));
-
-// the “graph” form is a map from gate name to x/y/adjacentGates
-export type AdjacencyGraphKey = typeof gateNames[number];
-type AdjacencyGraphValue = Omit<z.output<typeof adjacencyGraphRowSchema>, 'id'>;
-export type AdjacencyGraph = Record<AdjacencyGraphKey, AdjacencyGraphValue>;
-
-// schema for the values in the graph; its output type is enforced to match the type declared above
-const adjacencyGraphValueSchema = z.object({
-  x: z.number(),
-  y: z.number(),
-  adjacentGates: z.array(gateNameSchema),
-});
-type AdjacencyGraphValue2 = z.output<typeof adjacencyGraphValueSchema>;
-/* eslint-disable @typescript-eslint/no-unused-vars */
-type AssertExtends<T, U extends T> = true;
-type _A = AssertExtends<AdjacencyGraphValue, AdjacencyGraphValue2>;
-type _B = AssertExtends<AdjacencyGraphValue2, AdjacencyGraphValue>;
-/* eslint-enable @typescript-eslint/no-unused-vars */
-
-// schema for the entire graph
-export const adjacencyGraphSchema = z.custom<AdjacencyGraph>(
-  (adjacencyGraph) => !!adjacencyGraph
-    && typeof adjacencyGraph === 'object'
-    && gateNames.every((gateName) => gateName in adjacencyGraph)
-    && Object.values(adjacencyGraph)
-      .every((value) => adjacencyGraphValueSchema.safeParse(value).success),
-);
