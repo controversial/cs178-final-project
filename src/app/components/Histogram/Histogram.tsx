@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react';
 
 import * as d3 from 'd3';
+import wrapChart from '../ChartWrapper/ChartWrapper';
+
 import { useData } from '../DataProvider';
 import type { Row } from '../../data/utils/schemas';
-import wrapChart from '../ChartWrapper/ChartWrapper';
 
 import styles from './Histogram.module.scss';
 import classNamesBinder from 'classnames/bind';

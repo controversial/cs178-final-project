@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
-import * as d3 from 'd3';
-import { useData } from '../DataProvider';
+import useGlobalStore from '../../global-store';
 
+import * as d3 from 'd3';
+
+import { useData } from '../DataProvider';
 import type { Row } from '../../data/utils/schemas';
 import { gateNameSchema } from '../../data/utils/schemas';
 import adjacencyGraph from '../../data/sensor-adjacency-graph';
@@ -13,7 +15,8 @@ const cx = classNamesBinder.bind(styles);
 
 
 export default function Heatmap({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  const { allTrips: trips, hoveredGate } = useData();
+  const { allTrips: trips } = useData();
+  const hoveredGate = useGlobalStore((state) => state.hoveredGate);
   const freqs = useMemo(() => {
     const out: Partial<Record<`${Row['gateName']}--${Row['gateName']}`, number>> = {};
     [...trips.values()].forEach((tripRows) => {

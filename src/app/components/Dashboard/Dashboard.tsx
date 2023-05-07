@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
 import { useData } from '../DataProvider';
+import useGlobalStore from '../../global-store';
 
 import TripTime from '../TripTime';
 import Histogram from '../Histogram';
@@ -12,7 +13,8 @@ import classNames from 'classnames/bind';
 const cx = classNames.bind(styles);
 
 export default function DashboardLayout() {
-  const { selectedTrips, filteredTrips } = useData();
+  const { filteredTrips } = useData();
+  const selectedTrips = useGlobalStore((state) => state.selectedTrips);
   const visibleSelectedTrips = [...selectedTrips].filter((tripId) => filteredTrips.has(tripId));
 
   return (

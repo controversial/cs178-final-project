@@ -1,15 +1,17 @@
 import React from 'react';
+import useGlobalStore from '../../global-store';
+
 import { carTypes } from '../../data/utils/schemas';
 
 import styles from './VehicleFilter.module.scss';
 import classNames from 'classnames';
 import classNamesBinder from 'classnames/bind';
-import { useData } from '../DataProvider';
 const cx = classNamesBinder.bind(styles);
 
 
 function VehicleFilter({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  const { toggleVehicleTypeFilter } = useData();
+  const toggleVehicleTypeFilter = useGlobalStore((state) => state.toggleVehicleTypeFilter);
+
   return (
     <div className={classNames(cx('base', className))} {...props}>
       <p>Filter by Vehicle Type</p>

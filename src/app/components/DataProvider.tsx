@@ -1,20 +1,16 @@
-import React, { useContext, createContext, useState, useMemo } from 'react';
-import { CarType, Row } from '../data/utils/schemas';
+import React, { useContext, createContext, useMemo } from 'react';
 import * as d3 from 'd3';
 
+import useGlobalStore from '../global-store';
 
 import rows from '../data/sensor-readings';
 const trips = d3.group(rows, (r) => r.tripId);
 
 
 function useDataContextValue() {
-  const [vehicleTypeFilter, setVehicleTypeFilter] = useState<CarType[]>([]);
-  const [timeFilter, setTimeFilter] = useState<{ start: number, end: number } | false>(false);
-  const [dateFilter, setDateFilter] = useState<{ start: Date, end: Date } | false>(false);
-
-  const [selectedTrips, setSelectedTrips] = useState<Set<Row['tripId']>>(new Set());
-
-  const [hoveredGate, setHoveredGate] = useState<Row['gateName'] | null>(null);
+  const vehicleTypeFilter = useGlobalStore((state) => state.vehicleTypeFilter);
+  const timeFilter = useGlobalStore((state) => state.timeFilter);
+  const dateFilter = useGlobalStore((state) => state.dateFilter);
 
   // Filter sensor readings
   const filteredReadings = useMemo(() => {
@@ -58,35 +54,7 @@ function useDataContextValue() {
     filteredReadings,
     filteredRowIds,
     filteredTrips,
-
-    selectedTrips,
-
-    hoveredGate,
-    setHoveredGate,
-    clearHoveredGate: () => setHoveredGate(null),
-
-    toggleVehicleTypeFilter: (vt: Row['carType'], included: boolean) => {
-      if (included) setVehicleTypeFilter((vts) => [...vts, vt]);
-      else setVehicleTypeFilter((vts) => vts.filter((v) => v !== vt));
-    },
-
-    setTimeFilter: (start: number, end: number) => setTimeFilter({ start, end }),
-    clearTimeFilter: () => setTimeFilter(false),
-
-    setDateFilter: (start: Date, end: Date) => setDateFilter({ start, end }),
-    clearDateFilter: () => setDateFilter(false),
-
-    selectTrip: (tripId: Row['tripId']) => setSelectedTrips((oldSelectedTrips) => {
-      const newSelectedTrips = new Set(oldSelectedTrips);
-      newSelectedTrips.add(tripId);
-      return newSelectedTrips;
-    }),
-    deselectTrip: (tripId: Row['tripId']) => setSelectedTrips((oldSelectedTrips) => {
-      const newTrips = new Set(oldSelectedTrips);
-      newTrips.delete(tripId);
-      return newTrips;
-    }),
-  }), [filteredReadings, filteredRowIds, filteredTrips, selectedTrips, hoveredGate]);
+  }), [filteredReadings, filteredRowIds, filteredTrips]);
 }
 
 

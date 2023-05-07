@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
+import { useData } from '../DataProvider';
+import useGlobalStore from '../../global-store';
+
 import * as d3 from 'd3';
 import wrapChart from '../ChartWrapper/ChartWrapper';
-import { useData } from '../DataProvider';
 
 import styles from './TripTime.module.scss';
 import classNamesBinder from 'classnames/bind';
@@ -16,7 +18,10 @@ function TripTimeSvg({
   width: number;
   height: number;
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
-  const { selectedTrips, filteredTrips, setHoveredGate, clearHoveredGate } = useData();
+  const selectedTrips = useGlobalStore((state) => state.selectedTrips);
+  const setHoveredGate = useGlobalStore((state) => state.setHoveredGate);
+  const clearHoveredGate = useGlobalStore((state) => state.clearHoveredGate);
+  const { filteredTrips } = useData();
 
   const tripsSegmentTimes = useMemo(() => new Map(
     [...selectedTrips].flatMap((tripId) => {

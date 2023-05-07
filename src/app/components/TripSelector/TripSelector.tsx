@@ -1,9 +1,9 @@
-import React, { useMemo, useCallback, useRef, useState } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
+import useGlobalStore from '../../global-store';
 
 import { useData } from '../DataProvider';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import {
-  ColumnDef,
   SortingState,
   getCoreRowModel,
   useReactTable,
@@ -29,7 +29,10 @@ type TripStats = {
 const columnHelper = createColumnHelper<TripStats>();
 
 export default function TripSelector({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  const { selectedTrips, selectTrip, deselectTrip, filteredTrips } = useData();
+  const { filteredTrips } = useData();
+  const selectedTrips = useGlobalStore((state) => state.selectedTrips);
+  const selectTrip = useGlobalStore((state) => state.selectTrip);
+  const deselectTrip = useGlobalStore((state) => state.deselectTrip);
 
   const visibleColumnAccessor = useCallback((cellProps: CellContext<TripStats, unknown>) => (
     <div className={cx('cell', 'checkbox')}>
