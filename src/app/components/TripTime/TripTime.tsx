@@ -43,7 +43,7 @@ function TripTimeSvg({
   return (
     <svg {...props} width={width} height={height} viewBox={`0 0 ${width} ${height}`}>
       {[...tripsSegmentTimes.entries()].map(([tripId, segmentTimes]) => {
-        const line = d3.line().curve(d3.curveNatural);
+        const line = d3.line().curve(d3.curveMonotoneX);
         const path = line([
           [scaleX(0), scaleY(0)],
           ...segmentTimes.map((t, i): [number, number] => [scaleX(i + 1), scaleY(t)]),
