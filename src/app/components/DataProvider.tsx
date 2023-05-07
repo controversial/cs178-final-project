@@ -14,6 +14,8 @@ function useDataContextValue() {
 
   const [selectedTrips, setSelectedTrips] = useState<Set<Row['tripId']>>(new Set());
 
+  const [hoveredGate, setHoveredGate] = useState<Row['gateName'] | null>(null);
+
   // Filter sensor readings
   const filteredReadings = useMemo(() => {
     let filtered = rows;
@@ -59,6 +61,10 @@ function useDataContextValue() {
 
     selectedTrips,
 
+    hoveredGate,
+    setHoveredGate,
+    clearHoveredGate: () => setHoveredGate(null),
+
     toggleVehicleTypeFilter: (vt: Row['carType'], included: boolean) => {
       if (included) setVehicleTypeFilter((vts) => [...vts, vt]);
       else setVehicleTypeFilter((vts) => vts.filter((v) => v !== vt));
@@ -80,7 +86,7 @@ function useDataContextValue() {
       newTrips.delete(tripId);
       return newTrips;
     }),
-  }), [filteredReadings, filteredRowIds, filteredTrips, selectedTrips]);
+  }), [filteredReadings, filteredRowIds, filteredTrips, selectedTrips, hoveredGate]);
 }
 
 

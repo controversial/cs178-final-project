@@ -16,7 +16,7 @@ function TripTimeSvg({
   width: number;
   height: number;
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
-  const { selectedTrips, filteredTrips } = useData();
+  const { selectedTrips, filteredTrips, setHoveredGate, clearHoveredGate } = useData();
 
   const tripsSegmentTimes = useMemo(() => new Map(
     [...selectedTrips].flatMap((tripId) => {
@@ -36,13 +36,13 @@ function TripTimeSvg({
   const scaleX = useMemo(
     () => d3.scaleLinear()
       .domain([0, Math.max(...[...tripsSegmentTimes.values()].map((t) => t.length))])
-      .range([35, width - 5]),
+      .range([47, width - 7]),
     [tripsSegmentTimes, width],
   );
   const scaleY = useMemo(
     () => d3.scaleLinear()
       .domain([0, Math.max(...[...tripsSegmentTimes.values()].flat())])
-      .range([height - 5, 5]),
+      .range([height - 7, 7]),
     [tripsSegmentTimes, height],
   );
 
@@ -80,6 +80,14 @@ function TripTimeSvg({
                 cx={scaleX(i)}
                 cy={scaleY(t)}
                 r="4"
+                onMouseEnter={(e) => {
+                  setHoveredGate(filteredTrips.get(tripId)![i]!.gateName);
+                  e.currentTarget.setAttribute('r', '7');
+                }}
+                onMouseLeave={(e) => {
+                  clearHoveredGate();
+                  e.currentTarget.setAttribute('r', '4');
+                }}
                 fill="red"
               />
             ))}

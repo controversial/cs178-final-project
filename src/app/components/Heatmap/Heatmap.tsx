@@ -13,7 +13,7 @@ const cx = classNamesBinder.bind(styles);
 
 
 export default function Heatmap({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
-  const { allTrips: trips } = useData();
+  const { allTrips: trips, hoveredGate } = useData();
   const freqs = useMemo(() => {
     const out: Partial<Record<`${Row['gateName']}--${Row['gateName']}`, number>> = {};
     [...trips.values()].forEach((tripRows) => {
@@ -38,6 +38,14 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
             <path key={key} d={d} fill="none" stroke="rgb(255 0 0 / 50%)" strokeWidth={widthScale(freq)} />
           );
         })}
+        {hoveredGate && (
+          <circle
+            cx={adjacencyGraph[gateNameSchema.parse(hoveredGate)].x}
+            cy={adjacencyGraph[gateNameSchema.parse(hoveredGate)].y}
+            r="6"
+            fill="blue"
+          />
+        )}
       </svg>
 
       <img src={`${import.meta.env.BASE_URL}basemap.bmp`} alt="Base map of the Lekagul Preserve" />
