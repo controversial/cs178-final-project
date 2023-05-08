@@ -122,16 +122,18 @@ function HistogramBarsSvg<T extends { toString(): string }>({
   );
 }
 
-const HistogramBars = wrapChart(HistogramBarsSvg);
+const HistogramBars = wrapChart(HistogramBarsSvg) as <T extends { toString(): string }>(
+  props: Omit<React.ComponentProps<typeof HistogramBarsSvg<T>>, 'width' | 'height'>,
+) => JSX.Element;
 
 
-export default function Histogram({
+export default function Histogram<T extends { toString(): string }>({
   label,
   className,
   ...props
 }: {
   label: React.ReactNode,
-} & React.ComponentProps<typeof HistogramBars>) {
+} & React.ComponentProps<typeof HistogramBars<T>>) {
   return (
     <figure className={classNames(cx('base'), className)}>
       <figcaption>{label}</figcaption>
