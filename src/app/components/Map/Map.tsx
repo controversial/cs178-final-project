@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import useGlobalStore from '../../global-store';
 import { useData } from '../DataProvider';
-import { Row, gateNameSchema, gateTypes, getGateType } from '../../data/utils/schemas';
+import { Row, gateNameSchema, getGateType } from '../../data/utils/schemas';
 
 import { adjacencyGraph, paths, smoothPaths } from './roadways';
 import { concatPaths, simplifyPath, shiftPath, removeClosePoints } from './path-utils';
@@ -15,22 +15,26 @@ const cx = classNamesBinder.bind(styles);
 
 
 const line = d3.line();
-const gateScale = d3.scaleOrdinal(gateTypes, d3.symbolsFill.slice(1));
 
 
 function Gates() {
   const selectedGates = useGlobalStore((state) => state.selectedGates);
   const selectGate = useGlobalStore((state) => state.selectGate);
   const deselectGate = useGlobalStore((state) => state.deselectGate);
+  const gateSymbolScale = useGlobalStore((state) => state.gateSymbolScale);
+  const hoveredGate = useGlobalStore((state) => state.hoveredGate);
+  const setHoveredGate = useGlobalStore((state) => state.setHoveredGate);
+  const clearHoveredGate = useGlobalStore((state) => state.clearHoveredGate);
 
   return (
     <g className={cx('gates')}>
       {Object.entries(adjacencyGraph).map(([gateId_, { x, y }]) => {
         const gateId = gateNameSchema.parse(gateId_);
         const gateType = getGateType(gateId);
-        const gateShape = gateScale(gateType);
+        const gateShape = gateSymbolScale(gateType);
         const selected = selectedGates.has(gateId);
-        const path = d3.symbol(gateShape, 20)();
+        const hovered = hoveredGate === gateId;
+        const path = d3.symbol(gateShape, hovered ? 30 : 20)();
         if (!path) return null;
         return (
           <g key={gateId}>
@@ -38,7 +42,7 @@ function Gates() {
               d={path}
               transform={`translate(${x + 0.5},${y + 0.5})`}
               fill={selected ? 'white' : 'black'}
-              stroke="white"
+              stroke={selected ? 'white' : 'rgb(255 255 255 / 0.8)'}
               strokeWidth={2}
               strokeLinejoin="round"
             />
@@ -52,6 +56,8 @@ function Gates() {
                 if (selected) deselectGate(gateId);
                 else selectGate(gateId);
               }}
+              onMouseEnter={() => setHoveredGate(gateId)}
+              onMouseLeave={() => clearHoveredGate()}
             />
           </g>
         );

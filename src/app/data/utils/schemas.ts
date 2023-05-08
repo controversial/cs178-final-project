@@ -16,6 +16,7 @@ export const gateNames = [
 ] as const;
 export const gateNameSchema = z.enum(gateNames);
 export const gateTypes = ['entrance', 'gate', 'general-gate', 'ranger-stop', 'ranger-base', 'camping'] as const;
+export type GateType = typeof gateTypes[number];
 export const gateTypeSchema = z.enum(gateTypes);
 export const getGateType = (gateName: string) => gateTypeSchema.parse(gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1]);
 

@@ -1,7 +1,7 @@
-import React, { useMemo, useRef, useEffect, useState } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
 import { useData } from '../DataProvider';
 import useGlobalStore from '../../global-store';
-import { Row } from '../../data/utils/schemas';
+import { Row, getGateType } from '../../data/utils/schemas';
 
 import * as d3 from 'd3';
 import wrapChart from '../ChartWrapper/ChartWrapper';
@@ -15,32 +15,49 @@ const cx = classNamesBinder.bind(styles);
 function Circle({
   x,
   y,
+  gateId,
   color,
-  onMouseEnter,
-  onMouseLeave,
 }: {
   x: number;
   y: number;
+  gateId: Row['gateName'];
   color: string;
-  onMouseEnter: React.MouseEventHandler<SVGCircleElement>;
-  onMouseLeave: React.MouseEventHandler<SVGCircleElement>;
 }) {
-  const ref = useRef<SVGCircleElement>(null);
+  const hoveredGate = useGlobalStore((state) => state.hoveredGate);
+  const hovered = hoveredGate === gateId;
+  const setHoveredGate = useGlobalStore((state) => state.setHoveredGate);
+  const clearHoveredGate = useGlobalStore((state) => state.clearHoveredGate);
+
+  const selectedGates = useGlobalStore((state) => state.selectedGates);
+  const selected = selectedGates.has(gateId);
+  const selectGate = useGlobalStore((state) => state.selectGate);
+  const deselectGate = useGlobalStore((state) => state.deselectGate);
+
+  const gateSymbolScale = useGlobalStore((state) => state.gateSymbolScale);
+  const gateType = getGateType(gateId);
+  const gateShape = gateSymbolScale(gateType);
+  const path = d3.symbol(gateShape, hovered ? 200 : 120)();
+  if (!path) return null;
 
   return (
     <g>
-      <circle ref={ref} cx={x} cy={y} r="4" fill={color} />
+      <path
+        d={path}
+        transform={`translate(${x},${y})`}
+        fill={selected ? color : '#020012'}
+        stroke={color}
+        strokeWidth={2}
+        strokeLinejoin="round"
+      />
       <circle
         cx={x}
         cy={y}
         r="10"
-        onMouseEnter={(e) => {
-          onMouseEnter(e);
-          ref.current?.setAttribute('r', '7');
-        }}
-        onMouseLeave={(e) => {
-          onMouseLeave(e);
-          ref.current?.setAttribute('r', '4');
+        onMouseEnter={() => setHoveredGate(gateId)}
+        onMouseLeave={() => clearHoveredGate()}
+        onClick={() => {
+          if (selected) deselectGate(gateId);
+          else selectGate(gateId);
         }}
         fill="transparent"
         stroke="none"
@@ -53,12 +70,10 @@ function Circle({
 function TripTimeSvg({
   width,
   height,
-  setDetailReading,
   ...props
 }: {
   width: number;
   height: number;
-  setDetailReading: React.Dispatch<React.SetStateAction<Row & {x: number, y: number} | null>>;
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
   const { selectedTripsColorScale } = useGlobalStore((state) => state.computed);
@@ -82,13 +97,13 @@ function TripTimeSvg({
   const scaleX = useMemo(
     () => d3.scaleLinear()
       .domain([0, Math.max(...[...tripsSegmentTimes.values()].map((t) => t.length - 1))])
-      .range([47, width - 7]),
+      .range([55, width - 15]),
     [tripsSegmentTimes, width],
   );
   const scaleY = useMemo(
     () => d3.scaleLinear()
       .domain([0, Math.max(...[...tripsSegmentTimes.values()].flat())])
-      .range([height - 7, 7]),
+      .range([height - 15, 15]),
     [tripsSegmentTimes, height],
   );
 
@@ -97,8 +112,6 @@ function TripTimeSvg({
     return d3.axisLeft(scaleY).tickValues(ticks).tickFormat((d) => `${d3.format('~r')(d)}`);
   }, [scaleY]);
 
-  const setHoveredGate = useGlobalStore((state) => state.setHoveredGate);
-  const clearHoveredGate = useGlobalStore((state) => state.clearHoveredGate);
 
   const highlightLineRef = useRef<SVGLineElement>(null);
   const setHighlightX = useGlobalStore((state) => state.setSelectedTripsHighlightX);
@@ -167,16 +180,7 @@ function TripTimeSvg({
                 color={color}
                 x={scaleX(i)}
                 y={scaleY(t)}
-                onMouseEnter={(e) => {
-                  const { x, y } = e.currentTarget.getBoundingClientRect();
-                  const reading = filteredTrips.get(tripId)![i]!;
-                  setHoveredGate(reading.gateName);
-                  setDetailReading({ ...reading, x, y });
-                }}
-                onMouseLeave={() => {
-                  clearHoveredGate();
-                  setDetailReading(null);
-                }}
+                gateId={filteredTrips.get(tripId)![i]!.gateName}
               />
             ))}
           </g>
@@ -192,14 +196,13 @@ const TripTimeGraph = wrapChart(TripTimeSvg);
 export default function TripTime({
   className,
   ...props
-}: Omit<React.ComponentProps<typeof TripTimeGraph>, 'setDetailReading'>) {
+}: React.ComponentProps<typeof TripTimeGraph>) {
   const clearSelectedTrips = useGlobalStore((state) => state.clearSelectedTrips);
-  const [detailReading, setDetailReading] = useState<Row & {x: number, y: number} | null>(null);
 
   return (
     <figure className={classNames(cx('base'), className)}>
       <figcaption>Selected Trips: Time Between Sensor Readings</figcaption>
-      <TripTimeGraph {...props} setDetailReading={setDetailReading} />
+      <TripTimeGraph {...props} />
       <button
         className={cx('clear')}
         type="button"
@@ -207,21 +210,6 @@ export default function TripTime({
       >
         Clear Selection
       </button>
-      {detailReading && (
-        <div
-          className={cx('detail')}
-          style={{
-            transform: [
-              `translate(${detailReading.x}px, ${detailReading.y}px)`,
-              'translate(-100%, -100%)',
-              'translate(-6px, -4px)',
-            ].join(' '),
-          }}
-        >
-          <h5>{detailReading.gateName}</h5>
-          <p>{detailReading.timestamp.toLocaleString(undefined, { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' })}</p>
-        </div>
-      )}
     </figure>
   );
 }

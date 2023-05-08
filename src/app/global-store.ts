@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import type { Row, CarType } from './data/utils/schemas';
+import type { Row, CarType, GateType } from './data/utils/schemas';
+import { gateTypes } from './data/utils/schemas';
 import * as d3 from 'd3';
 
 
@@ -32,6 +33,8 @@ export interface GlobalState {
   selectedTripsHighlightX: number | null;
   setSelectedTripsHighlightX: (x: number | null) => void;
   clearSelectedTripsHighlightX: () => void;
+
+  gateSymbolScale: d3.ScaleOrdinal<GateType, d3.SymbolType>,
 
   computed: {
     selectedTripsColorScale: d3.ScaleOrdinal<Row['tripId'], string>;
@@ -84,6 +87,8 @@ const useGlobalStore = create<GlobalState>((set, get) => ({
   selectedTripsHighlightX: null,
   setSelectedTripsHighlightX: (x) => set({ selectedTripsHighlightX: x }),
   clearSelectedTripsHighlightX: () => set({ selectedTripsHighlightX: null }),
+
+  gateSymbolScale: d3.scaleOrdinal(gateTypes, d3.symbolsFill.slice(1)),
 
   computed: {
     get selectedTripsColorScale() {
