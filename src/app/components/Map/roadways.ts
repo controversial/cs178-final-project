@@ -140,7 +140,7 @@ export const smoothPaths = Object.fromEntries(Object.entries(paths).map(([key, p
   if (pathPoints.length < 2) return [key, pathPoints];
 
   let points = pathPoints;
-  points = simplifyPath(pathPoints, 0.3, 0.3);
+  points = simplifyPath(points, 0.3, 0.3);
   points = removeClosePoints(points, 1);
   points = shiftPath(points, 1.5, 3);
   points = simplifyPath(points, 0.7, 0.1);

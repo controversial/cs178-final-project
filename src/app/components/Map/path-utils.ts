@@ -102,3 +102,9 @@ export function shiftPath(
     return { x: p.x + n.x * s, y: p.y + n.y * s };
   });
 }
+
+
+/** Put multiple paths end-to-end */
+export function concatPaths(paths: { x: number, y: number }[][]) {
+  return removeClosePoints(paths.flat(), 0.1);
+}
