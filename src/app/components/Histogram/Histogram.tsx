@@ -70,7 +70,7 @@ function HistogramBarsSvg<T extends { toString(): string }>({
       }
       const findBin = (x: number) => {
         const domain = xScale.domain();
-        if (!domain[0]) return null;
+        if (domain.length === 0) return null;
         let binIdx = domain.findIndex((b) => xScale(b)! >= x) - 1;
         if (binIdx === -2) binIdx = domain.length - 1;
         if (binIdx === -1) binIdx = 0;
