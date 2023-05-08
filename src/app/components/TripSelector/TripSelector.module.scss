@@ -28,13 +28,31 @@
 }
 
 .base table {
-  th {
+  width: 100%;
+
+  th, button {
     text-align: left;
+  }
+
+  font-size: 0.8rem;
+
+  td {
+    .checkbox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .text {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
   }
 }
 
-.checkbox {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.header {
+  border: 0;
+  background-color: transparent;
+  padding: 0;
 }

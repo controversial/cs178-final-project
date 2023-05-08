@@ -21,6 +21,7 @@ const cx = classNamesBinder.bind(styles);
 
 type TripStats = {
   tripId: number;
+  carId: string | number;
   tripLength: number;
   tripDate: Date;
   carType: DataRow['carType'];
@@ -36,7 +37,7 @@ export default function TripSelector({ className, ...props }: React.HTMLAttribut
   const selectedTripsColorScale = useGlobalStore((state) => state.computed.selectedTripsColorScale);
 
   const visibleColumnAccessor = useCallback((cellProps: CellContext<TripStats, unknown>) => (
-    <div className={cx('cell', 'checkbox')}>
+    <div className={cx('checkbox')}>
       <input
         type="checkbox"
         checked={selectedTrips.has(cellProps.row.original.tripId)}
@@ -49,6 +50,12 @@ export default function TripSelector({ className, ...props }: React.HTMLAttribut
     </div>
   ), [deselectTrip, selectTrip, selectedTrips]);
 
+  const carIdColumnAccessor = useCallback((cellProps: CellContext<TripStats, unknown>) => (
+    <div className={cx('text')}>
+      {cellProps.getValue() as string | number}
+    </div>
+  ), []);
+
   const columns = useMemo(() => [
     columnHelper.display({
       id: 'Visible',
@@ -57,20 +64,23 @@ export default function TripSelector({ className, ...props }: React.HTMLAttribut
       size: 40,
     }),
 
-    columnHelper.accessor('tripId', { header: 'Trip ID' }),
+    columnHelper.accessor('tripId', { header: 'Trip ID', size: 80 }),
+    columnHelper.accessor('carId', { header: 'Car ID', cell: carIdColumnAccessor }),
     columnHelper.accessor('tripDate', {
-      cell: (cellProps) => cellProps.getValue().toLocaleDateString(undefined, { month: 'long', day: 'numeric' }),
+      cell: (cellProps) => cellProps.getValue().toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
       header: 'Date',
+      size: 70,
     }),
-    columnHelper.accessor('carType', { header: 'Vehicle type' }),
+    columnHelper.accessor('carType', { header: 'Vehicle type', size: 40 }),
     columnHelper.accessor('tripLength', {
       cell: (cellProps) => `${Math.round(cellProps.getValue() / (3600 * 100)) / 10} hours`,
       header: 'Total length',
     }),
-  ], [visibleColumnAccessor]);
+  ], [visibleColumnAccessor, carIdColumnAccessor]);
 
   const data: TripStats[] = useMemo(() => [...filteredTrips].map(([tripId, trip]) => ({
     tripId,
+    carId: trip[0]?.carId.slice(4) ?? 0,
     tripDate: trip[0]?.timestamp ?? new Date(),
     carType: trip[0]?.carType ?? '1',
     tripLength: Number(trip.at(-1)?.timestamp) - Number(trip[0]?.timestamp),
@@ -123,7 +133,7 @@ export default function TripSelector({ className, ...props }: React.HTMLAttribut
                     {header.isPlaceholder ? null : (
                       <button
                         type="button"
-                        className={header.column.getCanSort() ? 'cursor-pointer select-none' : ''}
+                        className={classNames(cx('header'), header.column.getCanSort() ? 'cursor-pointer select-none' : '')}
                         onClick={header.column.getToggleSortingHandler()}
                       >
                         {flexRender(
