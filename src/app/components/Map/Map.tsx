@@ -97,6 +97,32 @@ function TripLine({ tripId, color }: { tripId: number, color: string }) {
     return points;
   }, [segmentsPoints]);
 
+  if (!tripPoints) return null;
+  const pathString = line(tripPoints.map(({ x, y }) => [x + 0.5, y + 0.5]));
+  if (!pathString) return null;
+
+  return <path d={pathString} stroke={color} strokeWidth={3} fill="none" />;
+}
+
+
+function TripTrace({ tripId, color }: { tripId: number, color: string }) {
+  const { filteredTrips } = useData();
+  const trip = filteredTrips.get(tripId);
+
+  // Each leg of the trip
+  const segmentsPoints = useMemo(() => {
+    if (!trip) return null;
+    const out: { x: number, y: number }[][] = [];
+    for (let i = 1; i < trip.length; i += 1) {
+      const sensor1 = trip[i - 1]!.gateName;
+      const sensor2 = trip[i]!.gateName;
+      const tracedPath = smoothPaths[`${sensor1}--${sensor2}`];
+      const fallbackPath = [adjacencyGraph[sensor1], adjacencyGraph[sensor2]];
+      out.push(tracedPath ?? fallbackPath);
+    }
+    return out;
+  }, [trip]);
+
   // Marker for “highlightX” position in the trip
   const highlightDotRef = useRef<SVGCircleElement>(null);
   // Keep a SVGPathElement for each leg of the trip as we need it to draw the highlight dot
@@ -136,29 +162,17 @@ function TripLine({ tripId, color }: { tripId: number, color: string }) {
     return null;
   }));
 
-  if (!trip || !tripPoints) return null;
-  const pathString = line(tripPoints.map(({ x, y }) => [x + 0.5, y + 0.5]));
-  if (!pathString) return null;
-
   return (
-    <>
-      <path
-        d={pathString}
-        stroke={color}
-        strokeWidth={3}
-        fill="none"
-      />
-      <circle
-        ref={highlightDotRef}
-        r={2}
-        fill={color}
-        stroke="rgb(0 0 0 / 50%)"
-        strokeWidth={1}
-        cx={0}
-        cy={0}
-        display="none"
-      />
-    </>
+    <circle
+      ref={highlightDotRef}
+      r={2}
+      fill={color}
+      stroke="rgb(0 0 0 / 50%)"
+      strokeWidth={1}
+      cx={0}
+      cy={0}
+      display="none"
+    />
   );
 }
 
@@ -174,6 +188,13 @@ function SelectedTripsMap({ img }: { img: React.ReactElement }) {
         <svg viewBox="0 0 200 200">
           {[...selectedTrips].map((tripId) => (
             <TripLine
+              key={tripId}
+              tripId={tripId}
+              color={selectedTripsColorScale(tripId)}
+            />
+          ))}
+          {[...selectedTrips].map((tripId) => (
+            <TripTrace
               key={tripId}
               tripId={tripId}
               color={selectedTripsColorScale(tripId)}
