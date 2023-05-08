@@ -102,7 +102,7 @@ function HistogramBarsSvg<T extends { toString(): string }>({
                 y={barY - 20}
                 width={barWidth}
                 height={barHeight}
-                fill="blue"
+                fill="rgb(135 140 160)"
               />
               <text
                 x={labelX}
