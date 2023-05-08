@@ -78,7 +78,11 @@ export default function DashboardLayout() {
         className={cx('time-histogram')}
         accessor={useCallback((d) => d.timestamp.getUTCHours(), [])}
         bins={new Array(24).fill(0).map((_, i) => i)}
-        onBrush={(startBin, endBin) => { setTimeFilter(startBin?.bin ?? -1, endBin?.bin ?? 25); }}
+        onBrush={(startBin, endBin) => {
+          const s = startBin ? (startBin.bin + startBin.t) : -1;
+          const e = endBin ? (endBin.bin + endBin.t) : -1;
+          setTimeFilter(s, e);
+        }}
         onClearBrush={clearTimeFilter}
       />
       <Map
