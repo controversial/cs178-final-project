@@ -13,7 +13,7 @@ import styles from './Map.module.scss';
 const cx = classNamesBinder.bind(styles);
 
 
-function Heatmap() {
+function Heatmap({ img }: { img: React.ReactElement }) {
   const { filteredTrips: trips } = useData();
 
   const freqs = useMemo(() => {
@@ -34,27 +34,45 @@ function Heatmap() {
   const alphaScale = d3.scaleLinear().domain([1, maxFreq]).range([0, 80]);
 
   return (
-    <svg viewBox="0 0 200 200">
-      {Object.entries(freqs).map(([key, freq]) => {
-        const [from, to] = key.split('--') as [Row['gateName'], Row['gateName']];
-        const straightLinePath = `M${adjacencyGraph[from!].x + 0.5},${adjacencyGraph[from!].y + 0.5} L${adjacencyGraph[to!].x + 0.5},${adjacencyGraph[to!].y + 0.5}`;
-        const smoothPathPoints = smoothPaths[key];
-        const smoothPath = smoothPathPoints
-          && line(smoothPathPoints.map(({ x, y }) => [x + 0.5, y + 0.5]));
-        const d = smoothPath ?? straightLinePath;
-        return (
-          <path
-            key={key}
-            d={d}
-            fill="none"
-            stroke={`rgb(255 0 0 / ${alphaScale(freq)}%)`}
-            strokeWidth={5}
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          />
-        );
-      })}
-    </svg>
+    <>
+      <figcaption>Heatmap</figcaption>
+      <div className={cx('container')}>
+        <svg viewBox="0 0 200 200">
+          {Object.entries(freqs).map(([key, freq]) => {
+            const [from, to] = key.split('--') as [Row['gateName'], Row['gateName']];
+            const straightLinePath = `M${adjacencyGraph[from!].x + 0.5},${adjacencyGraph[from!].y + 0.5} L${adjacencyGraph[to!].x + 0.5},${adjacencyGraph[to!].y + 0.5}`;
+            const smoothPathPoints = smoothPaths[key];
+            const smoothPath = smoothPathPoints
+              && line(smoothPathPoints.map(({ x, y }) => [x + 0.5, y + 0.5]));
+            const d = smoothPath ?? straightLinePath;
+            return (
+              <path
+                key={key}
+                d={d}
+                fill="none"
+                stroke={`rgb(255 0 0 / ${alphaScale(freq)}%)`}
+                strokeWidth={5}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+              />
+            );
+          })}
+        </svg>
+        {img}
+      </div>
+    </>
+  );
+}
+
+
+function SelectedTripsMap({ img }: { img: React.ReactElement }) {
+  return (
+    <>
+      <figcaption>Selected Trips: Map</figcaption>
+      <div className={cx('container')}>
+        {img}
+      </div>
+    </>
   );
 }
 
@@ -63,11 +81,13 @@ export default function Map({ className, ...props }: React.HTMLAttributes<HTMLEl
   const selectedGates = useGlobalStore((state) => state.selectedGates);
   const clearSelectedGates = useGlobalStore((state) => state.clearSelectedGates);
 
+  const selectedTrips = useGlobalStore((state) => state.selectedTrips);
+
+  const img = <img src={`${import.meta.env.BASE_URL}basemap.bmp`} alt="Base map of the Lekagul Preserve" />;
+
   return (
     <figure className={classNames(cx('base'), className)} {...props}>
-      <figcaption>Heatmap</figcaption>
-      <Heatmap />
-      <img src={`${import.meta.env.BASE_URL}basemap.bmp`} alt="Base map of the Lekagul Preserve" />
+      {selectedTrips.size ? <SelectedTripsMap img={img} /> : <Heatmap img={img} />}
       {selectedGates.size ? (
         <button
           className={cx('clear')}

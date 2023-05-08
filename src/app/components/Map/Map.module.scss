@@ -1,31 +1,39 @@
 .base {
-  position: relative;
-
-  & > svg,
-  & > img {
-    position: absolute;
-    top: 1.75rem;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 1.75rem);
-    object-fit: contain;
-  }
+  display: flex;
+  flex-direction: column;
 
   figcaption {
     text-align: center;
     font-weight: bold;
+    flex: 0 0 auto;
   }
 
-  img {
-    image-rendering: pixelated;
-    mix-blend-mode: lighten;
-    z-index: 0;
-  }
+  .container {
+    flex: 1 1 0;
+    position: relative;
 
-  svg {
-    z-index: 1;
-    path {
-      vector-effect: non-scaling-stroke;
+    & > svg,
+    & > img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    & > img {
+      image-rendering: pixelated;
+      mix-blend-mode: lighten;
+      z-index: 0;
+      opacity: 0.35;
+    }
+
+    & > svg {
+      z-index: 1;
+      path {
+        vector-effect: non-scaling-stroke;
+      }
     }
   }
 
