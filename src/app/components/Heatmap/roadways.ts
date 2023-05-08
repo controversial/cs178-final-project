@@ -1,7 +1,9 @@
 import CSVParser from '../../data/utils/csv-parser';
 import { sensorRowSchema } from '../../data/utils/schemas';
+import { simplifyPath, shiftPath, removeClosePoints } from './path-utils';
 
-// Load the bitmap image of the park map
+
+/** Load the bitmap image of the park map */
 async function getMapImage() {
   const req = await fetch(`${import.meta.env.BASE_URL}basemap.bmp`);
   const blob = await req.blob();
@@ -14,7 +16,7 @@ async function getMapImage() {
   return image;
 }
 
-// Load the sensor locations
+/** Load the sensor locations */
 async function getSensors() {
   const req = await fetch(`${import.meta.env.BASE_URL}sensors.csv`);
   const text = await req.text();
@@ -49,7 +51,7 @@ const sensorsByPos = Object.fromEntries(
 const sensorsById = Object.fromEntries(sensors.map((sensor) => [sensor.id, sensor]));
 
 
-// Set up our data structures
+// Set up our output data structures
 
 // Will track which sensors are adjacent
 export const adjacencyGraph = Object.fromEntries(sensors.map(({ id, x, y }) => [
@@ -63,6 +65,8 @@ export const paths: Partial<Record<
   { x: number, y: number }[]>
 > = {};
 
+
+// Trace paths between sensors
 
 const mapSize = mapImage.width * mapImage.height;
 const idx = (x: number, y: number) => y * mapImage.width + x;
@@ -129,3 +133,17 @@ for (const sensor of sensors) {
   }
 }
 console.timeEnd('trace');
+
+
+console.time('smoothPaths');
+export const smoothPaths = Object.fromEntries(Object.entries(paths).map(([key, pathPoints]) => {
+  if (pathPoints.length < 2) return [key, pathPoints];
+
+  let points = pathPoints;
+  points = simplifyPath(pathPoints, 0.3, 0.3);
+  points = removeClosePoints(points, 1);
+  points = shiftPath(points, 1.5, 3);
+  points = simplifyPath(points, 0.7, 0.1);
+  return [key, points];
+}));
+console.timeEnd('smoothPaths');
