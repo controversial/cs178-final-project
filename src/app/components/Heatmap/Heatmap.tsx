@@ -5,7 +5,7 @@ import * as d3 from 'd3';
 
 import { useData } from '../DataProvider';
 import { Row, gateNames, gateNameSchema } from '../../data/utils/schemas';
-import { adjacencyGraph, paths } from './roadways';
+import { adjacencyGraph, smoothPaths } from './roadways';
 
 import classNames from 'classnames';
 import classNamesBinder from 'classnames/bind';
@@ -25,14 +25,19 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
     const out: Partial<Record<`${Row['gateName']}--${Row['gateName']}`, number>> = {};
     [...trips.values()].forEach((tripRows) => {
       tripRows.slice(0, -1).forEach((row, i) => {
-        const key = `${row.gateName}--${tripRows[i + 1]!.gateName}` as const;
-        out[key] = (out[key] ?? 0) + 1;
+        const a = row.gateName;
+        const b = tripRows[i + 1]!.gateName;
+        const key = `${a}--${b}` as const;
+        if (a !== b) out[key] = (out[key] ?? 0) + 1;
       });
     });
     return out;
   }, [trips]);
 
-  const widthScale = d3.scaleLinear().domain([0, d3.max(Object.values(freqs))!]).range([0, 20]);
+  // const widthScale = d3.scaleLinear().domain([0, d3.max(Object.values(freqs))!]).range([0, 20]);
+  const line = d3.line();
+  const maxFreq = Math.max(...Object.values(freqs));
+  const alphaScale = d3.scaleLinear().domain([1, maxFreq]).range([0, 80]);
 
   return (
     <figure className={classNames(cx('base'), className)} {...props}>
@@ -40,9 +45,21 @@ export default function Heatmap({ className, ...props }: React.HTMLAttributes<HT
       <svg viewBox="0 0 200 200">
         {Object.entries(freqs).map(([key, freq]) => {
           const [from, to] = key.split('--').map((gn) => gateNameSchema.parse(gn));
-          const d = `M${adjacencyGraph[from!].x + 0.5},${adjacencyGraph[from!].y + 0.5} L${adjacencyGraph[to!].x + 0.5},${adjacencyGraph[to!].y + 0.5}`;
+          const straightLinePath = `M${adjacencyGraph[from!].x + 0.5},${adjacencyGraph[from!].y + 0.5} L${adjacencyGraph[to!].x + 0.5},${adjacencyGraph[to!].y + 0.5}`;
+          const smoothPathPoints = smoothPaths[key];
+          const smoothPath = smoothPathPoints
+            && line(smoothPathPoints.map(({ x, y }) => [x + 0.5, y + 0.5]));
+          const d = smoothPath ?? straightLinePath;
           return (
-            <path key={key} d={d} fill="none" stroke="rgb(255 0 0 / 50%)" strokeWidth={widthScale(freq)} />
+            <path
+              key={key}
+              d={d}
+              fill="none"
+              stroke={`rgb(255 0 0 / ${alphaScale(freq)}%)`}
+              strokeWidth={5}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
           );
         })}
         {hoveredGate && (
