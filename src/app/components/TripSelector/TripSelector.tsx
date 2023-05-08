@@ -67,7 +67,7 @@ export default function TripSelector({ className, ...props }: React.HTMLAttribut
     columnHelper.accessor('tripId', { header: 'Trip ID', size: 80 }),
     columnHelper.accessor('carId', { header: 'Car ID', cell: carIdColumnAccessor }),
     columnHelper.accessor('tripDate', {
-      cell: (cellProps) => cellProps.getValue().toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      cell: (cellProps) => cellProps.getValue().toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }),
       header: 'Date',
       size: 70,
     }),
