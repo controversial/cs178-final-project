@@ -27,7 +27,10 @@ function HistogramBarsSvg<T extends { toString(): string }>({
   accessor: (d: Row) => T,
   bins: T[],
   binLabels?: string[],
-  onBrush: (startBinIndex: number, endBinIndex: number) => void,
+  onBrush: (
+    start: { bin: T, binIdx: number, t: number } | null,
+    end: { bin: T, binIdx: number, t: number } | null,
+  ) => void,
   onClearBrush: () => void,
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const { vehicleTypeFilteredReadings: filteredReadings } = useData();
@@ -47,7 +50,8 @@ function HistogramBarsSvg<T extends { toString(): string }>({
       .domain(bins)
       .range([0, xMax])
       .round(true)
-      .padding(0.4),
+      .paddingOuter(0)
+      .paddingInner(0.2),
     [bins, xMax],
   );
   const yScale = useMemo(
@@ -64,12 +68,21 @@ function HistogramBarsSvg<T extends { toString(): string }>({
         onClearBrush();
         return;
       }
-      const binWidth = xScale.step();
-      const selection = event.selection as [number, number];
-      const startBinIndex = Math.floor(selection[0] / binWidth);
-      const endBinIndex = Math.floor(selection[1] / binWidth);
+      const findBin = (x: number) => {
+        const domain = xScale.domain();
+        if (!domain[0]) return null;
+        let binIdx = domain.findIndex((b) => xScale(b)! >= x) - 1;
+        if (binIdx === -2) binIdx = domain.length - 1;
+        if (binIdx === -1) binIdx = 0;
 
-      onBrush(startBinIndex, endBinIndex);
+        const bin = bins[binIdx]!;
+        const binX = xScale(bin)!;
+        const binWidth = xScale.bandwidth();
+        return { bin, binIdx, t: Math.min((x - binX) / binWidth, 1) };
+      };
+
+      const selection = event.selection as [number, number];
+      onBrush(findBin(selection[0]), findBin(selection[1]));
     });
 
   return (
