@@ -84,7 +84,7 @@ function Heatmap({ img }: { img: React.ReactElement }) {
   }, [trips]);
 
   const maxFreq = Math.max(...Object.values(freqs));
-  const alphaScale = d3.scaleLinear().domain([1, maxFreq]).range([0, 80]);
+  const alphaScale = d3.scaleLinear().domain([0, maxFreq]).range([0, 80]);
 
   return (
     <>
