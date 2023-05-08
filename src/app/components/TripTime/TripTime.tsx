@@ -1,6 +1,7 @@
-import React, { useMemo, useRef, useEffect } from 'react';
+import React, { useMemo, useRef, useEffect, useState } from 'react';
 import { useData } from '../DataProvider';
 import useGlobalStore from '../../global-store';
+import { Row } from '../../data/utils/schemas';
 
 import * as d3 from 'd3';
 import wrapChart from '../ChartWrapper/ChartWrapper';
@@ -52,10 +53,12 @@ function Circle({
 function TripTimeSvg({
   width,
   height,
+  setDetailReading,
   ...props
 }: {
   width: number;
   height: number;
+  setDetailReading: React.Dispatch<React.SetStateAction<Row & {x: number, y: number} | null>>;
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
   const selectedTripsColorScale = useGlobalStore((state) => state.computed.selectedTripsColorScale);
@@ -164,8 +167,16 @@ function TripTimeSvg({
                 color={color}
                 x={scaleX(i)}
                 y={scaleY(t)}
-                onMouseEnter={() => setHoveredGate(filteredTrips.get(tripId)![i]!.gateName)}
-                onMouseLeave={clearHoveredGate}
+                onMouseEnter={(e) => {
+                  const { x, y } = e.currentTarget.getBoundingClientRect();
+                  const reading = filteredTrips.get(tripId)![i]!;
+                  setHoveredGate(reading.gateName);
+                  setDetailReading({ ...reading, x, y });
+                }}
+                onMouseLeave={() => {
+                  clearHoveredGate();
+                  setDetailReading(null);
+                }}
               />
             ))}
           </g>
@@ -177,16 +188,18 @@ function TripTimeSvg({
 
 const TripTimeGraph = wrapChart(TripTimeSvg);
 
+
 export default function TripTime({
   className,
   ...props
 }: React.ComponentProps<typeof TripTimeGraph>) {
   const clearSelectedTrips = useGlobalStore((state) => state.clearSelectedTrips);
+  const [detailReading, setDetailReading] = useState<Row & {x: number, y: number} | null>(null);
 
   return (
     <figure className={classNames(cx('base'), className)}>
       <figcaption>Selected Trips: Time Between Sensor Readings</figcaption>
-      <TripTimeGraph {...props} />
+      <TripTimeGraph {...props} setDetailReading={setDetailReading} />
       <button
         className={cx('clear')}
         type="button"
@@ -194,6 +207,21 @@ export default function TripTime({
       >
         Clear
       </button>
+      {detailReading && (
+        <div
+          className={cx('detail')}
+          style={{
+            transform: [
+              `translate(${detailReading.x}px, ${detailReading.y}px)`,
+              'translate(-100%, -100%)',
+              'translate(-6px, -4px)',
+            ].join(' '),
+          }}
+        >
+          <h5>{detailReading.gateName}</h5>
+          <p>{detailReading.timestamp.toLocaleString(undefined, { day: 'numeric', month: 'short', hour: 'numeric', minute: 'numeric' })}</p>
+        </div>
+      )}
     </figure>
   );
 }
