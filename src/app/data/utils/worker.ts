@@ -1,7 +1,7 @@
 /* eslint-env worker */
 
 import CSVParser from './csv-parser';
-import { rowSchema, messageToWorkerSchema, gateTypeSchema } from './schemas';
+import { rowSchema, messageToWorkerSchema, getGateType } from './schemas';
 import type { MessageFromWorker, Row } from './schemas';
 
 function assertNever(x: never): never { throw new Error(`Unexpected object: ${x}`); }
@@ -34,7 +34,7 @@ globalThis.addEventListener('message', async (event: MessageEvent<unknown>) => {
 
   const transformedRows = newRows.map((row) => {
     // "gateType" is the category of gate that the vehicle is scanning at
-    const gateType = gateTypeSchema.parse(row.gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1]);
+    const gateType = getGateType(row.gateName);
 
     // A new “trip” starts every time a vehicle enters the park; a “tripId” uniquely identifies each
     let tripId = carTripIds.get(row.carId);

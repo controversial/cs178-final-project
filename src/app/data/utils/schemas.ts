@@ -15,9 +15,9 @@ export const gateNames = [
   'camping0', 'camping1', 'camping2', 'camping3', 'camping4', 'camping5', 'camping6', 'camping7', 'camping8',
 ] as const;
 export const gateNameSchema = z.enum(gateNames);
-export const gateTypeSchema = z.enum([
-  'entrance', 'gate', 'general-gate', 'ranger-stop', 'ranger-base', 'camping',
-]);
+export const gateTypes = ['entrance', 'gate', 'general-gate', 'ranger-stop', 'ranger-base', 'camping'] as const;
+export const gateTypeSchema = z.enum(gateTypes);
+export const getGateType = (gateName: string) => gateTypeSchema.parse(gateName.match(/^([a-zA-Z-]+)[0-9]*$/)?.[1]);
 
 export const carTypes = ['1', '2', '2P', '3', '4', '5', '6'] as const;
 export type CarType = typeof carTypes[number];
@@ -42,6 +42,7 @@ export type Row = BaseRow & {
   gateType: z.infer<typeof gateTypeSchema>;
 };
 export type Trip = Row[];
+
 
 /*
  * 02. Schemas and types for messages passed between the CSV worker and the main thread

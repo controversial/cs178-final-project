@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import useGlobalStore from '../../global-store';
 import { useData } from '../DataProvider';
-import { Row } from '../../data/utils/schemas';
+import { Row, gateTypes, getGateType } from '../../data/utils/schemas';
 
 import { adjacencyGraph, paths, smoothPaths } from './roadways';
 import { concatPaths, simplifyPath, shiftPath, removeClosePoints } from './path-utils';
@@ -15,6 +15,31 @@ const cx = classNamesBinder.bind(styles);
 
 
 const line = d3.line();
+const gateScale = d3.scaleOrdinal(gateTypes, d3.symbolsFill);
+
+
+function Gates() {
+  return (
+    <g className={cx('gates')}>
+      {Object.entries(adjacencyGraph).map(([gateId, { x, y }]) => {
+        const gateType = getGateType(gateId);
+        const gateShape = gateScale(gateType);
+        const path = d3.symbol(gateShape, 15)();
+        if (!path) return null;
+        return (
+          <path
+            key={gateId}
+            d={path}
+            transform={`translate(${x + 0.5},${y + 0.5})`}
+            fill="#ccc"
+            stroke="black"
+            strokeWidth={2}
+          />
+        );
+      })}
+    </g>
+  );
+}
 
 
 function Heatmap({ img }: { img: React.ReactElement }) {
@@ -60,6 +85,7 @@ function Heatmap({ img }: { img: React.ReactElement }) {
               />
             );
           })}
+          <Gates />
         </svg>
         {img}
       </div>
@@ -193,6 +219,7 @@ function SelectedTripsMap({ img }: { img: React.ReactElement }) {
               color={selectedTripsColorScale(tripId)}
             />
           ))}
+          <Gates />
           {[...selectedTrips].map((tripId) => (
             <TripTrace
               key={tripId}
