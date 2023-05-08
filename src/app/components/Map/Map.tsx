@@ -1,7 +1,8 @@
-import React, { useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import useGlobalStore from '../../global-store';
 import { useData } from '../DataProvider';
 import { Row } from '../../data/utils/schemas';
+
 import { adjacencyGraph, paths, smoothPaths } from './roadways';
 import { concatPaths, simplifyPath, shiftPath, removeClosePoints } from './path-utils';
 
@@ -70,42 +71,101 @@ function Heatmap({ img }: { img: React.ReactElement }) {
 function TripLine({ tripId, color }: { tripId: number, color: string }) {
   const { filteredTrips } = useData();
   const trip = filteredTrips.get(tripId);
-  const tripPath = useMemo(() => {
+
+  // Each leg of the trip
+  const segmentsPoints = useMemo(() => {
     if (!trip) return null;
-    const componentPaths: { x: number, y: number }[][] = [];
+    const out: { x: number, y: number }[][] = [];
     for (let i = 1; i < trip.length; i += 1) {
       const sensor1 = trip[i - 1]!.gateName;
       const sensor2 = trip[i]!.gateName;
       const tracedPath = paths[`${sensor1}--${sensor2}`];
       const fallbackPath = [adjacencyGraph[sensor1], adjacencyGraph[sensor2]];
-      componentPaths.push(tracedPath ?? fallbackPath);
+      out.push(tracedPath ?? fallbackPath);
     }
-    let points = concatPaths(componentPaths);
+    return out;
+  }, [trip]);
+
+  // The entire trip
+  const tripPoints = useMemo(() => {
+    if (!segmentsPoints) return null;
+    let points = concatPaths(segmentsPoints);
     points = simplifyPath(points, 0.3, 0.3);
     points = removeClosePoints(points, 1);
     points = shiftPath(points, 1.5, 3);
     points = simplifyPath(points, 0.7, 0.1);
     return points;
-  }, [trip]);
+  }, [segmentsPoints]);
 
-  if (!tripPath) return null;
-  const pathString = line(tripPath.map(({ x, y }) => [x + 0.5, y + 0.5]));
+  // Marker for “highlightX” position in the trip
+  const highlightDotRef = useRef<SVGCircleElement>(null);
+  // Keep a SVGPathElement for each leg of the trip as we need it to draw the highlight dot
+  const [oldSegmentPaths, setOldSegmentPaths] = useState(segmentsPoints);
+  const tripSegmentPaths = useRef<(SVGPathElement | null)[]>([]);
+  if (segmentsPoints !== oldSegmentPaths) {
+    setOldSegmentPaths(segmentsPoints);
+    tripSegmentPaths.current = [];
+  }
+  // When the trip path changes
+  useEffect(() => useGlobalStore.subscribe((state) => {
+    const off = () => { if (highlightDotRef.current) highlightDotRef.current.setAttribute('display', 'none'); };
+    if (!highlightDotRef.current) return null;
+    if (state.selectedTripsHighlightX == null) return off();
+    if (!segmentsPoints) return off();
+    // which leg of the trip are we in?
+    const legIdx = Math.floor(state.selectedTripsHighlightX);
+    if (legIdx < 0 || legIdx >= segmentsPoints.length) return off();
+    // Construct a SVG path for this leg if we don’t have one stored
+    if (typeof tripSegmentPaths.current[legIdx] === 'undefined') {
+      const path = line(segmentsPoints[legIdx]!.map(({ x, y }) => [x + 0.5, y + 0.5]));
+      if (path) {
+        tripSegmentPaths.current[legIdx] = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        tripSegmentPaths.current[legIdx]!.setAttribute('d', path);
+      } else tripSegmentPaths.current[legIdx] = null;
+    }
+    const pathEl = tripSegmentPaths.current[legIdx];
+    if (!pathEl) return off();
+    // Get the position of the highlight dot in the leg
+    const legX = state.selectedTripsHighlightX - legIdx;
+    const pathLength = pathEl.getTotalLength();
+    const { x, y } = pathEl.getPointAtLength(pathLength * legX);
+    // Move the highlight dot to the position
+    highlightDotRef.current.removeAttribute('display');
+    highlightDotRef.current.setAttribute('cx', x.toString());
+    highlightDotRef.current.setAttribute('cy', y.toString());
+    return null;
+  }));
+
+  if (!trip || !tripPoints) return null;
+  const pathString = line(tripPoints.map(({ x, y }) => [x + 0.5, y + 0.5]));
   if (!pathString) return null;
 
   return (
-    <path
-      d={pathString}
-      stroke={color}
-      strokeWidth={3}
-      fill="none"
-    />
+    <>
+      <path
+        d={pathString}
+        stroke={color}
+        strokeWidth={3}
+        fill="none"
+      />
+      <circle
+        ref={highlightDotRef}
+        r={2}
+        fill={color}
+        stroke="rgb(0 0 0 / 50%)"
+        strokeWidth={1}
+        cx={0}
+        cy={0}
+        display="none"
+      />
+    </>
   );
 }
 
 
 function SelectedTripsMap({ img }: { img: React.ReactElement }) {
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
-  const selectedTripsColorScale = useGlobalStore((state) => state.computed.selectedTripsColorScale);
+  const { selectedTripsColorScale } = useGlobalStore((state) => state.computed);
 
   return (
     <>
