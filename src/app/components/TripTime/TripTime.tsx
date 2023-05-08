@@ -61,7 +61,7 @@ function TripTimeSvg({
   setDetailReading: React.Dispatch<React.SetStateAction<Row & {x: number, y: number} | null>>;
 } & Omit<React.HTMLAttributes<SVGElement>, 'width' | 'height' | 'viewBox'>) {
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
-  const selectedTripsColorScale = useGlobalStore((state) => state.computed.selectedTripsColorScale);
+  const { selectedTripsColorScale } = useGlobalStore((state) => state.computed);
   const { filteredTrips } = useData();
 
   const tripsSegmentTimes = useMemo(() => new Map(

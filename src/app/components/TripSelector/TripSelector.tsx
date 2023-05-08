@@ -34,7 +34,7 @@ export default function TripSelector({ className, ...props }: React.HTMLAttribut
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
   const selectTrip = useGlobalStore((state) => state.selectTrip);
   const deselectTrip = useGlobalStore((state) => state.deselectTrip);
-  const selectedTripsColorScale = useGlobalStore((state) => state.computed.selectedTripsColorScale);
+  const { selectedTripsColorScale } = useGlobalStore((state) => state.computed);
 
   const visibleColumnAccessor = useCallback((cellProps: CellContext<TripStats, unknown>) => (
     <div className={cx('checkbox')}>
