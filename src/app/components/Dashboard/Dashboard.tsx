@@ -5,7 +5,7 @@ import useGlobalStore from '../../global-store';
 import TripTime from '../TripTime';
 import Histogram from '../Histogram';
 import VehicleFilter from '../VehicleFilter';
-import Heatmap from '../Heatmap/Heatmap';
+import Map from '../Map';
 import TripSelector from '../TripSelector';
 
 import styles from './Dashboard.module.scss';
@@ -55,8 +55,8 @@ export default function DashboardLayout() {
         onBrush={(startBinIndex, endBinIndex) => { setTimeFilter(startBinIndex, endBinIndex); }}
         onClearBrush={clearTimeFilter}
       />
-      <Heatmap
-        className={cx('heatmap')}
+      <Map
+        className={cx('map')}
       />
       <TripTime
         className={cx('selected-trips-time')}
