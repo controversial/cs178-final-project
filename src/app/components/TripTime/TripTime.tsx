@@ -192,7 +192,7 @@ const TripTimeGraph = wrapChart(TripTimeSvg);
 export default function TripTime({
   className,
   ...props
-}: React.ComponentProps<typeof TripTimeGraph>) {
+}: Omit<React.ComponentProps<typeof TripTimeGraph>, 'setDetailReading'>) {
   const clearSelectedTrips = useGlobalStore((state) => state.clearSelectedTrips);
   const [detailReading, setDetailReading] = useState<Row & {x: number, y: number} | null>(null);
 
