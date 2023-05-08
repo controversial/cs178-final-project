@@ -81,7 +81,7 @@ function TripTimeSvg({
 
   const scaleX = useMemo(
     () => d3.scaleLinear()
-      .domain([0, Math.max(...[...tripsSegmentTimes.values()].map((t) => t.length))])
+      .domain([0, Math.max(...[...tripsSegmentTimes.values()].map((t) => t.length - 1))])
       .range([47, width - 7]),
     [tripsSegmentTimes, width],
   );
