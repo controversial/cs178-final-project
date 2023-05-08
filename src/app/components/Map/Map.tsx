@@ -192,12 +192,17 @@ export default function Map({ className, ...props }: React.HTMLAttributes<HTMLEl
   const clearSelectedGates = useGlobalStore((state) => state.clearSelectedGates);
 
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
+  const { filteredTrips } = useData();
+  const filteredSelectedTrips = useMemo(
+    () => [...selectedTrips].filter((tripId) => filteredTrips.has(tripId)),
+    [selectedTrips, filteredTrips],
+  );
 
   const img = <img src={`${import.meta.env.BASE_URL}basemap.bmp`} alt="Base map of the Lekagul Preserve" />;
 
   return (
     <figure className={classNames(cx('base'), className)} {...props}>
-      {selectedTrips.size ? <SelectedTripsMap img={img} /> : <Heatmap img={img} />}
+      {filteredSelectedTrips.length ? <SelectedTripsMap img={img} /> : <Heatmap img={img} />}
       {selectedGates.size ? (
         <button
           className={cx('clear')}
