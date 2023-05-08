@@ -205,7 +205,7 @@ export default function TripTime({
         type="button"
         onClick={clearSelectedTrips}
       >
-        Clear
+        Clear Selection
       </button>
       {detailReading && (
         <div
