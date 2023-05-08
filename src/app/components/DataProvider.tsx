@@ -48,7 +48,10 @@ function useDataContextValue() {
     new Map(
       [...trips].filter(([, tripRows]) => (
         tripRows.every((row) => filteredRowIds.has(row.id))
-        && (!(selectedGates.size) || tripRows.some((row) => selectedGates.has(row.gateName)))
+        && (
+          !(selectedGates.size)
+          || [...selectedGates].every((gate) => (tripRows.some((row) => row.gateName === gate)))
+        )
       )),
     )
   ), [filteredRowIds, selectedGates]);
