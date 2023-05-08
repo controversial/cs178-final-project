@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import useGlobalStore from '../../global-store';
 import { useData } from '../DataProvider';
-import { Row, gateNameSchema, getGateType } from '../../data/utils/schemas';
+import { Row, gateNameSchema, gateTypes, getGateType } from '../../data/utils/schemas';
 
 import { adjacencyGraph, paths, smoothPaths } from './roadways';
 import { concatPaths, simplifyPath, shiftPath, removeClosePoints } from './path-utils';
@@ -263,6 +263,7 @@ function SelectedTripsMap({ img }: { img: React.ReactElement }) {
 export default function Map({ className, ...props }: React.HTMLAttributes<HTMLElement>) {
   const selectedGates = useGlobalStore((state) => state.selectedGates);
   const clearSelectedGates = useGlobalStore((state) => state.clearSelectedGates);
+  const gateSymbolScale = useGlobalStore((state) => state.gateSymbolScale);
 
   const selectedTrips = useGlobalStore((state) => state.selectedTrips);
   const { filteredTrips } = useData();
@@ -285,6 +286,22 @@ export default function Map({ className, ...props }: React.HTMLAttributes<HTMLEl
           Clear Selection
         </button>
       ) : null}
+
+      <div className={cx('legend')}>
+        {gateTypes.map((gateType) => {
+          const shape = gateSymbolScale(gateType);
+          const path = d3.symbol(shape, 100)();
+          if (!path) return null;
+          return (
+            <div key={gateType} className={cx('legend-item')}>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+                <path d={path} fill="#020012" stroke="rgb(255 255 255 / 0.65)" strokeWidth="1.5" strokeLinejoin="round" transform="translate(15, 15)" />
+              </svg>
+              <span>{gateType}</span>
+            </div>
+          );
+        })}
+      </div>
     </figure>
   );
 }
