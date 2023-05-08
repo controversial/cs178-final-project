@@ -282,7 +282,7 @@ export default function Map({ className, ...props }: React.HTMLAttributes<HTMLEl
           type="button"
           onClick={clearSelectedGates}
         >
-          Clear
+          Clear Selection
         </button>
       ) : null}
     </figure>
