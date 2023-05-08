@@ -13,25 +13,26 @@
     bottom: 0;
     width: 100%;
     overflow: scroll;
-
-    .inner {
-      width: 100%;
-      position: relative;
-
-      .trip {
-        display: grid;
-        grid-template-columns: 0.25fr 1fr 1fr 1fr;
-        align-items: center;
-      }
-    }
   }
 }
 
 .base table {
-  width: 100%;
+  width: max-content;
 
   th, button {
     text-align: left;
+  }
+  th, td {
+    white-space: nowrap;
+    &:not(:last-child) {
+      padding-right: 2ch;
+    }
+  }
+  thead {
+    position: sticky;
+    top: 0;
+    background: #020012;
+    box-shadow: 0 -4px 10px 4px #020012;
   }
 
   font-size: 0.8rem;
