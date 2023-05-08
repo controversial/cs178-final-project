@@ -1,7 +1,7 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import useGlobalStore from '../../global-store';
 import { useData } from '../DataProvider';
-import { Row, gateTypes, getGateType } from '../../data/utils/schemas';
+import { Row, gateNameSchema, gateTypes, getGateType } from '../../data/utils/schemas';
 
 import { adjacencyGraph, paths, smoothPaths } from './roadways';
 import { concatPaths, simplifyPath, shiftPath, removeClosePoints } from './path-utils';
@@ -15,26 +15,45 @@ const cx = classNamesBinder.bind(styles);
 
 
 const line = d3.line();
-const gateScale = d3.scaleOrdinal(gateTypes, d3.symbolsFill);
+const gateScale = d3.scaleOrdinal(gateTypes, d3.symbolsFill.slice(1));
 
 
 function Gates() {
+  const selectedGates = useGlobalStore((state) => state.selectedGates);
+  const selectGate = useGlobalStore((state) => state.selectGate);
+  const deselectGate = useGlobalStore((state) => state.deselectGate);
+
   return (
     <g className={cx('gates')}>
-      {Object.entries(adjacencyGraph).map(([gateId, { x, y }]) => {
+      {Object.entries(adjacencyGraph).map(([gateId_, { x, y }]) => {
+        const gateId = gateNameSchema.parse(gateId_);
         const gateType = getGateType(gateId);
         const gateShape = gateScale(gateType);
-        const path = d3.symbol(gateShape, 15)();
+        const selected = selectedGates.has(gateId);
+        const path = d3.symbol(gateShape, 20)();
         if (!path) return null;
         return (
-          <path
-            key={gateId}
-            d={path}
-            transform={`translate(${x + 0.5},${y + 0.5})`}
-            fill="#ccc"
-            stroke="black"
-            strokeWidth={2}
-          />
+          <g key={gateId}>
+            <path
+              d={path}
+              transform={`translate(${x + 0.5},${y + 0.5})`}
+              fill={selected ? 'white' : 'black'}
+              stroke="white"
+              strokeWidth={2}
+              strokeLinejoin="round"
+            />
+            <circle
+              cx={x + 0.5}
+              cy={y + 0.5}
+              r={4}
+              fill="transparent"
+              cursor="pointer"
+              onClick={() => {
+                if (selected) deselectGate(gateId);
+                else selectGate(gateId);
+              }}
+            />
+          </g>
         );
       })}
     </g>
